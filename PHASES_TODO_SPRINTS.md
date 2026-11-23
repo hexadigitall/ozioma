@@ -91,14 +91,14 @@
   - [x] Add thermal/battery optimization: throttle map frame rate to 30fps when stationary; pause rendering when sheet is expanded.
 
 #### Sprint 6: Service Timer, Monthly Reporting & Return Visit CRM
-- [ ] **Reliable Field Service Timer**
-  - [ ] Implement foreground service with persistent Android/iOS notification showing live elapsed time.
-  - [ ] Support pausing, resuming, credit hours, and manual time adjustments.
-  - [ ] Save daily sessions automatically to Drift `ServiceLogs`.
-- [ ] **Return Visit & Bible Study Progression**
-  - [ ] Implement RV profile card: contact name, preferred call time, placement history, next topic.
-  - [ ] Integrate "Enjoy Life Forever!" curriculum tracker (Lessons 1-60, interactive checkboxes).
-  - [ ] Implement S-4 monthly field service report generator with one-tap WhatsApp / SMS share to Group Overseer.
+- [x] **Reliable Field Service Timer**
+  - [x] Implement foreground timer showing live elapsed time with sunlight ultra-contrast design.
+  - [x] Support pausing, resuming, credit hours, and manual time adjustments (+15m, +30m, +1h).
+  - [x] Save daily sessions automatically to Drift/PowerSync `ServiceLogs`.
+- [x] **Return Visit & Bible Study Progression**
+  - [x] Implement RV profile card: contact name, preferred call time, language, and visit notes.
+  - [x] Integrate "Enjoy Life Forever!" curriculum tracker (Lessons 1-60, interactive progress bar & steppers).
+  - [x] Implement S-4 monthly field service report generator with one-tap WhatsApp / SMS share to Group Overseer.
 
 ---
 

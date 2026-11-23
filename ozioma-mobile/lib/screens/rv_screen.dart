@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/database/database_providers.dart';
 import '../core/database/daos/return_visit_dao.dart';
+import '../features/return_visits/rv_detail_screen.dart';
 
 class RVScreen extends ConsumerWidget {
   const RVScreen({super.key});
@@ -100,7 +101,12 @@ class RVScreen extends ConsumerWidget {
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    // Profile details
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => RvDetailScreen(rv: rv),
+                      ),
+                    );
                   },
                 ),
               );
