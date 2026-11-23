@@ -1,6 +1,6 @@
 import React from 'react';
 import { Territory } from '../../types';
-import { Printer, X, Download } from 'lucide-react';
+import { Printer, X } from 'lucide-react';
 
 interface S13CardModalProps {
   territory: Territory;

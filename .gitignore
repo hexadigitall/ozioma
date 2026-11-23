@@ -1,0 +1,25 @@
+# Node & Vite Desktop
+node_modules/
+dist/
+package-lock.json
+
+# Rust & Tauri Core
+target/
+src-tauri/target/
+
+# Flutter & Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Database & Keystore files
+*.db
+*.db-shm
+*.db-wal
+offline_tiles/
+
+# OS Artifacts
+.DS_Store
+Thumbs.db

@@ -5,14 +5,11 @@ import { GisMapCanvas } from '../gis/GisMapCanvas';
 import { S13CardModal } from '../s13/S13CardModal';
 import {
   Map,
-  Users,
   Printer,
   Search,
   Scissors,
   Route,
   FileSpreadsheet,
-  CheckCircle2,
-  Clock,
   ShieldAlert,
 } from 'lucide-react';
 
@@ -20,7 +17,6 @@ export const TriPaneWorkspace: React.FC = () => {
   const {
     territories,
     selectedTerritoryId,
-    selectTerritory,
     filterStatus,
     setFilterStatus,
     searchQuery,

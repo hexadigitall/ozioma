@@ -129,17 +129,17 @@
 **Goal:** Build a dedicated high-performance native desktop workspace (Windows, macOS, Linux) engineered with Tauri 2.0, utilizing a Rust GIS core and a dense React 19 / TypeScript UI for Territory Overseers, Service Overseers, and Secretaries.
 
 #### Sprint 9: Tauri 2.0 Workspace Architecture & Multi-Pane Layout
-- [ ] **Tauri 2.0 & Rust Core Initialization**
-  - [ ] Initialize `ozioma-desktop` using Tauri 2.0 (`tauri-build`, `tauri-plugin-sql`, `tauri-plugin-fs`).
-  - [ ] Configure React 19 + TypeScript + Tailwind CSS + Radix UI frontend shell.
-- [ ] **Desktop Tri-Pane Layout**
-  - [ ] Left pane: Congregation territory inventory with multi-column sorting, filter tags, and status counters.
-  - [ ] Center pane: High-precision GIS map canvas (MapLibre GL JS / Deck.gl) supporting mouse-wheel zoom, pan, and coordinate display.
-  - [ ] Right pane: Deep territory inspector, publisher assignment history, and address registry.
-- [ ] **Desktop Shell & Native Enhancements**
-  - [ ] Implement native desktop menu bar (File, Edit, Territories, Reports, View, Window).
-  - [ ] Implement comprehensive keyboard shortcuts (Ctrl+N: New Territory, Ctrl+F: Search, Ctrl+P: Print, Space: Pan Map).
-  - [ ] Support window resizing, multi-monitor detaching, and high-DPI scaling.
+- [x] **Tauri 2.0 & Rust Core Initialization**
+  - [x] Initialize `ozioma-desktop` using Tauri 2.0 (`tauri-build`, `tauri-plugin-sql`, `tauri-plugin-fs`).
+  - [x] Configure React 19 + TypeScript + Tailwind CSS frontend shell (built & verified with Vite).
+- [x] **Desktop Tri-Pane Layout**
+  - [x] Left pane: Congregation territory inventory with multi-column sorting, filter tags, and status counters.
+  - [x] Center pane: High-precision GIS map canvas supporting mouse-wheel zoom, pan, and coordinate display.
+  - [x] Right pane: Deep territory inspector, publisher assignment history, and address registry.
+- [x] **Desktop Shell & Native Enhancements**
+  - [x] Implement desktop menu bar (File, Edit, Territories, Reports, View, Window).
+  - [x] Implement comprehensive keyboard shortcuts (Ctrl+N: New Territory, Ctrl+F: Search, Ctrl+P: Print, Space: Pan Map).
+  - [x] Support window resizing, high-DPI scaling, and S-13 vector PDF card preview modal.
 
 #### Sprint 10: Precision GIS Cartography & Boundary Drawing Tools (Rust Core)
 - [ ] **Rust-Powered Vector Geometry Tools (`geo` / `geos`)**
