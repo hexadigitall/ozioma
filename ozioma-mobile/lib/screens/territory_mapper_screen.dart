@@ -220,7 +220,7 @@ class _PolyPainter extends CustomPainter {
   void paint(Canvas c, ui.Size s) {
     if (pts.length < 2) return;
     final p = Paint()
-      ..color = Colors.blue.withOpacity(0.3)
+      ..color = Colors.blue.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
     final path = Path();
     for (int i = 0; i < pts.length; i++) {

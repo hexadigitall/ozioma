@@ -6,6 +6,7 @@ import 'daos/territory_dao.dart';
 import 'daos/address_dao.dart';
 import 'daos/return_visit_dao.dart';
 import 'daos/service_log_dao.dart';
+import 'daos/dnc_manager.dart';
 
 // Encryption providers
 final secureKeyManagerProvider = Provider<SecureKeyManager>((ref) {
@@ -41,4 +42,9 @@ final returnVisitDaoProvider = Provider<ReturnVisitDao>((ref) {
 final serviceLogDaoProvider = Provider<ServiceLogDao>((ref) {
   final manager = ref.watch(powerSyncDatabaseProvider);
   return ServiceLogDao(manager.db);
+});
+
+final dncManagerProvider = Provider<DncManager>((ref) {
+  final manager = ref.watch(powerSyncDatabaseProvider);
+  return DncManager(manager.db);
 });

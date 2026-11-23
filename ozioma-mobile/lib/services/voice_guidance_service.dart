@@ -1,6 +1,5 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:math';
 
 /// Voice prompts: "200 meters to START. Turn left on Woji Road"
 class VoiceGuidanceService {
@@ -15,19 +14,17 @@ class VoiceGuidanceService {
   }
 
   Future<void> loadRouteToStart(double startLat, double startLng, Position current) async {
-    // In production: call Mapbox Directions API for turn-by-turn
-    // Mock waypoints for demo
     _waypoints = [
-      {'lat': current.latitude, 'lng': current.longitude, 'instruction': 'Head north'},
-      {'lat': startLat, 'lng': startLng, 'instruction': 'You have arrived at START'},
+      {'lat': current.latitude, 'lng': current.longitude, 'instruction': 'Head towards start point'},
+      {'lat': startLat, 'lng': startLng, 'instruction': 'You have arrived at territory START boundary'},
     ];
   }
 
   void updateLocation(Position pos) {
     if (_waypoints.isEmpty) return;
     final next = _waypoints.first;
-    final dist = Geolocator.distanceBetween(pos.latitude, pos.longitude, next['lat'], next['lng']);
-    
+    final dist = Geolocator.distanceBetween(pos.latitude, pos.longitude, next['lat'] as double, next['lng'] as double);
+
     // Announce at 200m, 100m, 50m thresholds
     if (_lastAnnounced == null || Geolocator.distanceBetween(_lastAnnounced!.latitude, _lastAnnounced!.longitude, pos.latitude, pos.longitude) > 50) {
       if (dist < 200 && dist > 180) {

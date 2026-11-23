@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'dart:convert';
 
 /// Snap walked GPS points to nearest roads using Mapbox Map Matching API
 /// Offline fallback: uses Ramer-Douglas-Peucker simplification only

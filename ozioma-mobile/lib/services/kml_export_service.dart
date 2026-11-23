@@ -47,7 +47,7 @@ class KmlExportService {
 </kml>''';
 
     final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/territory_${territoryNumber}.kml');
+    final file = File('${dir.path}/territory_$territoryNumber.kml');
     await file.writeAsString(kml);
     return file.path;
   }
