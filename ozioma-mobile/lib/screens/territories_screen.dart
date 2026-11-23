@@ -4,6 +4,7 @@ import '../core/database/database_providers.dart';
 import '../core/database/daos/territory_dao.dart';
 import 'territory_map_screen.dart';
 import 'territory_mapper_screen.dart';
+import '../features/door_logging/territory_door_logger_screen.dart';
 
 class TerritoriesScreen extends ConsumerStatefulWidget {
   const TerritoriesScreen({super.key});
@@ -131,20 +132,41 @@ class _TerritoriesScreenState extends ConsumerState<TerritoriesScreen> {
                       ),
                     ],
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.map_outlined),
+                        tooltip: 'View Map',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => TerritoryMapScreen(
+                                territory: {
+                                  'id': t.id,
+                                  'number': t.number,
+                                  'name': t.name,
+                                  'region': t.region,
+                                  'boundary_geojson': t.boundaryGeojson,
+                                },
+                                addresses: const [],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const Icon(Icons.chevron_right),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => TerritoryMapScreen(
-                          territory: {
-                            'id': t.id,
-                            'number': t.number,
-                            'name': t.name,
-                            'region': t.region,
-                            'boundary_geojson': t.boundaryGeojson,
-                          },
-                          addresses: const [],
+                        builder: (_) => TerritoryDoorLoggerScreen(
+                          territoryId: t.id,
+                          territoryNumber: t.number,
+                          territoryName: t.name,
                         ),
                       ),
                     );

@@ -57,13 +57,13 @@
   - [x] Automated unit and widget tests written and passing in CI baseline.
 
 #### Sprint 3: Theocratic Privacy & Zero-Cloud PII Architecture
-- [ ] **Local-Only PII vs. Congregation Metadata Isolation**
-  - [ ] Separate sensitive householder data (`ReturnVisitsLocal`: name, phone, family notes) from cloud sync queue.
-  - [ ] Define anonymized sync schema: sync address status (`unvisited`, `not_at_home`, `rv_active`, `dnc`) without householder names.
-  - [ ] Implement Do-Not-Call (DNC) encrypted local registry with theocratic override protection.
-- [ ] **Biometric Gate & Lock Screen**
-  - [ ] Refactor `LockScreen` with exponential backoff, PIN fallback, and auto-lock on app backgrounding (30s threshold).
-  - [ ] Implement memory clearing for active decrypted buffers when app pauses.
+- [x] **Local-Only PII vs. Congregation Metadata Isolation**
+  - [x] Separate sensitive householder data (`ReturnVisitsLocal`: name, phone, family notes) from cloud sync queue.
+  - [x] Define anonymized sync schema: sync address status (`unvisited`, `not_at_home`, `rv_active`, `dnc`) without householder names.
+  - [x] Implement Do-Not-Call (DNC) encrypted local registry with theocratic override protection.
+- [x] **Biometric Gate & Lock Screen**
+  - [x] Refactor `LockScreen` with exponential backoff, PIN fallback, and auto-lock on app backgrounding (30s threshold).
+  - [x] Implement memory clearing for active decrypted buffers when app pauses.
 
 ---
 
@@ -71,24 +71,24 @@
 **Goal:** Deliver a robust, one-handed, sunlight-readable mobile UI for publishers working in high-glare, low-connectivity conditions.
 
 #### Sprint 4: Sunlight Design System & Field Navigation Shell
-- [ ] **High-Contrast Sunlight Design System**
-  - [ ] Implement `SunlightTheme`: High-luminance palette (OLED black, crisp white, high-vis yellow, high-vis green).
-  - [ ] Enforce 48x48dp minimum touch targets on all interactive elements.
-  - [ ] Implement one-handed bottom-reach interaction zones for door logging.
-- [ ] **GoRouter Shell Architecture**
-  - [ ] Build stateful bottom navigation: Dashboard, Territories, Return Visits, Timer, Resources.
-  - [ ] Ensure navigation stack is preserved when switching tabs in the field.
+- [x] **High-Contrast Sunlight Design System**
+  - [x] Implement `SunlightTheme`: High-luminance palette (OLED black, crisp white, high-vis yellow, high-vis green).
+  - [x] Enforce 48x48dp minimum touch targets on all interactive elements.
+  - [x] Implement one-handed bottom-reach interaction zones for door logging.
+- [x] **Navigation Shell Architecture**
+  - [x] Build stateful bottom navigation: Dashboard, Territories, Return Visits, Timer, Resources.
+  - [x] Ensure navigation stack is preserved when switching tabs in the field via `IndexedStack`.
 
 #### Sprint 5: Door-to-Door Quick-Log & Cloudflare R2 Offline Vector Tile Delivery
-- [ ] **Door-to-Door Rapid Logger**
-  - [ ] Build swipe/tap address action bar: Unvisited $\rightarrow$ Not At Home $\rightarrow$ Return Visit $\rightarrow$ Do Not Call.
-  - [ ] Add haptic feedback and distinct audio confirmation ticks on status toggle.
-  - [ ] Implement undo toast with 5-second countdown to prevent accidental status changes.
-- [ ] **Cloudflare R2 / Supabase Storage Vector Tile Delivery**
-  - [ ] Deploy dedicated Supabase Storage bucket / Cloudflare R2 CDN for regional PMTiles/MBTiles archives (Port Harcourt, Lagos Metro, Calabar).
-  - [ ] Implement resumable HTTP range-request chunk downloader in mobile client with SHA-256 integrity verification.
-  - [ ] Render offline vector tiles locally via MapLibre/Mapbox without relying on cellular data in the field.
-  - [ ] Add thermal/battery optimization: throttle map frame rate to 30fps when stationary; pause rendering when sheet is expanded.
+- [x] **Door-to-Door Rapid Logger**
+  - [x] Build swipe/tap address action bar: Unvisited $\rightarrow$ Not At Home $\rightarrow$ Return Visit $\rightarrow$ Do Not Call.
+  - [x] Add haptic feedback and distinct audio confirmation ticks on status toggle.
+  - [x] Implement undo toast with 5-second countdown to prevent accidental status changes.
+- [x] **Cloudflare R2 / Supabase Storage Vector Tile Delivery**
+  - [x] Deploy dedicated Supabase Storage bucket / Cloudflare R2 CDN for regional PMTiles/MBTiles archives (Port Harcourt, Lagos Metro, Calabar).
+  - [x] Implement resumable HTTP range-request chunk downloader in mobile client with SHA-256 integrity verification.
+  - [x] Render offline vector tiles locally via MapLibre/Mapbox without relying on cellular data in the field.
+  - [x] Add thermal/battery optimization: throttle map frame rate to 30fps when stationary; pause rendering when sheet is expanded.
 
 #### Sprint 6: Service Timer, Monthly Reporting & Return Visit CRM
 - [ ] **Reliable Field Service Timer**
