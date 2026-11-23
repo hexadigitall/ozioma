@@ -1,13 +1,13 @@
 import 'package:geolocator/geolocator.dart';
 import 'dart:math';
-import 'package:uuid/uuid.dart';
-import 'secure_db.dart';
+import 'dart:convert';
+import '../core/database/daos/territory_dao.dart';
 
 /// Territory Mapping by walking: Start -> track GPS points -> Stop -> Polygonize
 /// Produces GeoJSON polygon for territory boundary + centroid for map camera
 class TerritoryMapperService {
-  final SecureDatabase db;
-  TerritoryMapperService(this.db);
+  final TerritoryDao territoryDao;
+  TerritoryMapperService(this.territoryDao);
 
   bool _isRecording = false;
   List<Position> _track = [];
@@ -28,7 +28,9 @@ class TerritoryMapperService {
     if (!ok) throw Exception('Location permission required');
     _track = [];
     _isRecording = true;
-    _positionStream = Geolocator.getPositionStream(locationSettings: LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: minDistanceM));
+    _positionStream = Geolocator.getPositionStream(
+      locationSettings: LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: minDistanceM.toInt()),
+    );
     _positionStream!.listen((pos) {
       if (_track.isEmpty || Geolocator.distanceBetween(_track.last.latitude, _track.last.longitude, pos.latitude, pos.longitude) >= minDistanceM) {
         _track.add(pos);
@@ -60,15 +62,19 @@ class TerritoryMapperService {
       'coordinates': [simplified],
     };
 
-    final id = const Uuid().v4();
-    await db.into(db.territories).insert(TerritoriesCompanion.insert(
-      id: id,
+    final geojsonStr = jsonEncode(geojson);
+
+    final id = await territoryDao.createTerritory(
       number: number,
       name: name,
-      boundaryGeojson: geojson.toString(),
-      status: const Value('available'),
+      region: 'Port Harcourt',
       congregationId: congregationId,
-    ));
+      boundaryGeojson: geojsonStr,
+      startLat: simplified.first[1],
+      startLng: simplified.first[0],
+      stopLat: simplified.last[1],
+      stopLng: simplified.last[0],
+    );
 
     return {
       'id': id,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import '../services/secure_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Elder tool: Draw a line across territory polygon to split into 2

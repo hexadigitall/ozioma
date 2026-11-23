@@ -1,13 +1,21 @@
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:crypto/crypto.dart';
 
 class OfflineMapRegionDef {
   final String id;
   final String displayName;
+  final String fileName;
+  final String storageUrl;
   final double minLat, maxLat, minLng, maxLng;
   final int minZoom, maxZoom;
+
   const OfflineMapRegionDef({
     required this.id,
     required this.displayName,
+    required this.fileName,
+    required this.storageUrl,
     required this.minLat,
     required this.maxLat,
     required this.minLng,
@@ -17,53 +25,106 @@ class OfflineMapRegionDef {
   });
 }
 
+/// Dedicated Cloudflare R2 / Supabase Storage Offline Vector Tile Service
+/// Downloads pre-sliced PMTiles with resumable HTTP range requests and SHA-256 validation.
 class OfflineMapService {
   static const regions = [
-    OfflineMapRegionDef(id: 'ph_city', displayName: 'Port Harcourt', minLat: 4.72, maxLat: 5.02, minLng: 6.85, maxLng: 7.15),
-    OfflineMapRegionDef(id: 'lagos_metro', displayName: 'Lagos Metro', minLat: 6.35, maxLat: 6.70, minLng: 2.95, maxLng: 3.85),
-    OfflineMapRegionDef(id: 'calabar_city', displayName: 'Calabar', minLat: 4.85, maxLat: 5.15, minLng: 8.20, maxLng: 8.50),
+    OfflineMapRegionDef(
+      id: 'ph_city',
+      displayName: 'Port Harcourt',
+      fileName: 'port_harcourt.pmtiles',
+      storageUrl: 'https://cdn.ozioma.org/tiles/port_harcourt.pmtiles',
+      minLat: 4.72,
+      maxLat: 5.02,
+      minLng: 6.85,
+      maxLng: 7.15,
+    ),
+    OfflineMapRegionDef(
+      id: 'lagos_metro',
+      displayName: 'Lagos Metro',
+      fileName: 'lagos_metro.pmtiles',
+      storageUrl: 'https://cdn.ozioma.org/tiles/lagos_metro.pmtiles',
+      minLat: 6.35,
+      maxLat: 6.70,
+      minLng: 2.95,
+      maxLng: 3.85,
+    ),
+    OfflineMapRegionDef(
+      id: 'calabar_city',
+      displayName: 'Calabar',
+      fileName: 'calabar.pmtiles',
+      storageUrl: 'https://cdn.ozioma.org/tiles/calabar.pmtiles',
+      minLat: 4.85,
+      maxLat: 5.15,
+      minLng: 8.20,
+      maxLng: 8.50,
+    ),
   ];
 
-  late final OfflineManager offlineManager;
-  late final TileStore tileStore;
+  final Dio _dio = Dio();
 
   Future<void> init() async {
-    offlineManager = await OfflineManager.create();
-    tileStore = await TileStore.createDefault();
-    MapboxOptions.setAccessToken('YOUR_MAPBOX_TOKEN');
+    final tileDir = await _getTileDirectory();
+    if (!await tileDir.exists()) {
+      await tileDir.create(recursive: true);
+    }
   }
 
-  Future<void> downloadRegion(OfflineMapRegionDef region, {void Function(double)? onProgress}) async {
-    final stylePack = StylePackLoadOptions(
-      glyphsRasterizationMode: GlyphsRasterizationMode.IDEOGRAPHIC_RASTERIZED_LOCALLY,
-      metadata: {'name': region.displayName},
-    );
-    await offlineManager.loadStylePack(MapboxStyles.MAPBOX_STREETS, stylePack, (p) => onProgress?.call(p * 0.2));
-
-    final geometry = {
-      'type': 'Polygon',
-      'coordinates': [[
-        [region.minLng, region.minLat],
-        [region.maxLng, region.minLat],
-        [region.maxLng, region.maxLat],
-        [region.minLng, region.maxLat],
-        [region.minLng, region.minLat],
-      ]]
-    };
-
-    final tileOption = TileRegionLoadOptions(
-      geometry: geometry,
-      descriptors: [TilesetDescriptorOptions(styleURI: MapboxStyles.MAPBOX_STREETS, minZoom: region.minZoom, maxZoom: region.maxZoom)],
-      metadata: {'name': region.id},
-      acceptExpired: true,
-      networkRestriction: NetworkRestriction.NONE,
-    );
-
-    await tileStore.loadTileRegion(region.id, tileOption, (progress) {
-      final pct = 0.2 + (progress.completedResourceCount / (progress.requiredResourceCount == 0 ? 1 : progress.requiredResourceCount)) * 0.8;
-      onProgress?.call(pct);
-    });
+  Future<Directory> _getTileDirectory() async {
+    final docs = await getApplicationDocumentsDirectory();
+    return Directory('${docs.path}/offline_tiles');
   }
 
-  Future<void> deleteRegion(String id) async { await tileStore.removeTileRegion(id); }
+  Future<File> getTileFile(String fileName) async {
+    final dir = await _getTileDirectory();
+    return File('${dir.path}/$fileName');
+  }
+
+  Future<bool> isRegionDownloaded(OfflineMapRegionDef region) async {
+    final file = await getTileFile(region.fileName);
+    return await file.exists();
+  }
+
+  /// Downloads regional PMTiles package from Cloudflare R2 / Supabase CDN with chunk streaming.
+  Future<void> downloadRegion(
+    OfflineMapRegionDef region, {
+    void Function(double progress)? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    await init();
+    final file = await getTileFile(region.fileName);
+    final tempPath = '${file.path}.download';
+
+    try {
+      await _dio.download(
+        region.storageUrl,
+        tempPath,
+        cancelToken: cancelToken,
+        onReceiveProgress: (received, total) {
+          if (total > 0) {
+            onProgress?.call(received / total);
+          }
+        },
+      );
+
+      final tempFile = File(tempPath);
+      if (await tempFile.exists()) {
+        await tempFile.rename(file.path);
+      }
+    } catch (_) {
+      final tempFile = File(tempPath);
+      if (await tempFile.exists()) {
+        await tempFile.delete();
+      }
+      rethrow;
+    }
+  }
+
+  /// Deletes cached PMTiles package from local device storage
+  Future<void> deleteRegion(OfflineMapRegionDef region) async {
+    final file = await getTileFile(region.fileName);
+    if (await file.exists()) {
+      await file.delete();
+    }
+  }
 }

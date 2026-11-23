@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import '../services/secure_db.dart';
 import '../services/presence_service.dart';
 import '../services/voice_guidance_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
