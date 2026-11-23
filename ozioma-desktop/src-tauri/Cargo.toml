@@ -1,0 +1,29 @@
+[package]
+name = "ozioma-desktop"
+version = "0.1.0"
+description = "Ozioma Desktop — Dedicated Native Congregation Field Administration & GIS Cartography"
+authors = ["Ozioma Engineering Team"]
+edition = "2021"
+
+[lib]
+name = "ozioma_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0.0", features = [] }
+tauri-plugin-shell = "2.0.0"
+tauri-plugin-fs = "2.0.0"
+tauri-plugin-sql = { version = "2.0.0", features = ["sqlite"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+geo = "0.28"
+geojson = "0.24"
+printpdf = "0.7"
+keyring = "2.1"
+rusqlite = { version = "0.31", features = ["bundled"] }
+calamine = "0.24"
+thiserror = "1.0"
+tokio = { version = "1", features = ["full"] }

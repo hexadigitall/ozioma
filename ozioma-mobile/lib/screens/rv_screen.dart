@@ -1,0 +1,1 @@
+import 'package:flutter/material.dart'; class RVScreen extends StatelessWidget { const RVScreen({super.key}); @override Widget build(BuildContext context){ return Scaffold(appBar: AppBar(title: Text('Return Visits')), body: ListView(children:[ ListTile(title: Text('John Doe - 104 Oak St'), subtitle: Text('Next: Why suffering? • Mornings')), ])); } }

@@ -1,0 +1,30 @@
+# ==============================================================================
+# OZIOMA POWERSYNC REPLICATION SPECIFICATION (ZERO-CLOUD PII COMPLIANT)
+# ==============================================================================
+# Invariant: Sensitive householder details (names, phones, visit notes)
+#            remain strictly on-device in AES-256 local encrypted SQLite.
+#            Only congregation territory geometry & status are replicated.
+# ==============================================================================
+
+bucket_definitions:
+  # Bucket 1: Replicates congregation territory boundaries & address statuses
+  congregation_territories:
+    parameters: SELECT id as congregation_id FROM profiles WHERE id = auth.user_id()
+    data:
+      - SELECT * FROM territories WHERE congregation_id = bucket.congregation_id
+      - SELECT a.* FROM addresses a 
+        JOIN territories t ON a.territory_id = t.id 
+        WHERE t.congregation_id = bucket.congregation_id
+      - SELECT id, congregation_id, display_name, role FROM profiles 
+        WHERE congregation_id = bucket.congregation_id
+
+  # Bucket 2: Replicates personal ministry hours (synced across user's devices)
+  my_service_records:
+    parameters: SELECT auth.user_id() as user_id
+    data:
+      - SELECT * FROM service_logs WHERE user_id = bucket.user_id
+
+  # Bucket 3: Replicates regional vector map tile package metadata
+  tile_manifests:
+    data:
+      - SELECT * FROM vector_tile_manifests
