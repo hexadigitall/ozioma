@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1019662405707",
+    "project_id": "hexadigitall-ozioma-fs-prod",
+    "storage_bucket": "hexadigitall-ozioma-fs-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019662405707:android:c97e69c9bd23e816d67dce",
+        "android_client_info": {
+          "package_name": "com.kovaro.ozioma"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1019662405707-l8s1d5m48h7b596hr4m6abke32apfv15.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA55gI1Xf8cPlSj7JNEr2Md8mk5XJGf04k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1019662405707-l8s1d5m48h7b596hr4m6abke32apfv15.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
