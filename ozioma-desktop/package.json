@@ -4,10 +4,12 @@
   "version": "1.0.0",
   "description": "Ozioma Desktop — Dedicated Native Worldwide Congregation Field Administration & GIS Cartography",
   "type": "module",
+  "main": "main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "desktop": "electron .",
     "tauri": "tauri",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },

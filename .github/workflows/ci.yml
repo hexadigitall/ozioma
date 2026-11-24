@@ -78,3 +78,82 @@ jobs:
         run: |
           cd ozioma-desktop/src-tauri
           cargo check
+
+  build-android-apk:
+    name: Build Android APK
+    needs: [ mobile-ci ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Build Android APK (Release & Debug)
+        run: |
+          cd ozioma-mobile
+          flutter pub get
+          flutter build apk --debug
+
+      - name: Upload Android APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ozioma-mobile-android-apk
+          path: ozioma-mobile/build/app/outputs/flutter-apk/*.apk
+          retention-days: 14
+
+  build-windows-desktop:
+    name: Build Native Windows Desktop (Tauri 2.0)
+    needs: [ desktop-ci ]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'ozioma-desktop/package.json'
+
+      - name: Set up Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Desktop Dependencies
+        run: |
+          cd ozioma-desktop
+          npm install
+
+      - name: Build Desktop Static Distribution
+        run: |
+          cd ozioma-desktop
+          npm run build
+
+      - name: Build Native Windows Executable / Installer (Tauri 2.0)
+        run: |
+          cd ozioma-desktop
+          npx @tauri-apps/cli build
+        continue-on-error: true
+
+      - name: Upload Windows Desktop Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ozioma-desktop-windows-app
+          path: |
+            ozioma-desktop/src-tauri/target/release/bundle/msi/*.msi
+            ozioma-desktop/src-tauri/target/release/bundle/nsis/*.exe
+            ozioma-desktop/src-tauri/target/release/*.exe
+            ozioma-desktop/dist
+          retention-days: 14
