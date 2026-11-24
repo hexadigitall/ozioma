@@ -4,6 +4,7 @@ import { TerritoryTable } from '../tables/TerritoryTable';
 import { GisMapCanvas } from '../gis/GisMapCanvas';
 import { S13CardModal } from '../s13/S13CardModal';
 import { MasterImportModal } from '../importer/MasterImportModal';
+import { CircuitOverseerAnalyticsModal } from '../analytics/CircuitOverseerAnalyticsModal';
 import {
   Map,
   Printer,
@@ -11,6 +12,7 @@ import {
   Scissors,
   Route,
   FileSpreadsheet,
+  BarChart3,
   ShieldAlert,
 } from 'lucide-react';
 
@@ -24,6 +26,8 @@ export const TriPaneWorkspace: React.FC = () => {
     setSearchQuery,
     isS13ModalOpen,
     setIsS13ModalOpen,
+    isAnalyticsModalOpen,
+    setIsAnalyticsModalOpen,
     activeTool,
     setActiveTool,
   } = useTerritoryStore();
@@ -62,6 +66,14 @@ export const TriPaneWorkspace: React.FC = () => {
           >
             <FileSpreadsheet className="h-3.5 w-3.5 text-blue-400" />
             <span>Import Excel</span>
+          </button>
+          <button
+            onClick={() => setIsAnalyticsModalOpen(true)}
+            className="flex items-center gap-1.5 rounded bg-emerald-600/20 border border-emerald-500/30 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-600/30"
+            title="Circuit Overseer (CO) & Annual S-8 Suite"
+          >
+            <BarChart3 className="h-3.5 w-3.5 text-emerald-400" />
+            <span>CO Analytics & S-8</span>
           </button>
           <div className="h-4 w-px bg-slate-800" />
           <div className="flex items-center gap-1 text-[11px] text-emerald-400">
@@ -262,6 +274,11 @@ export const TriPaneWorkspace: React.FC = () => {
       {/* Excel / CSV Master Import & Theocratic Export Modal */}
       {isImportModalOpen && (
         <MasterImportModal onClose={() => setIsImportModalOpen(false)} />
+      )}
+
+      {/* Circuit Overseer (CO) & Annual S-8 Analytics Modal */}
+      {isAnalyticsModalOpen && (
+        <CircuitOverseerAnalyticsModal onClose={() => setIsAnalyticsModalOpen(false)} />
       )}
     </div>
   );

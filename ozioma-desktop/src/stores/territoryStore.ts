@@ -9,6 +9,7 @@ interface TerritoryStore {
   filterStatus: string;
   searchQuery: string;
   isS13ModalOpen: boolean;
+  isAnalyticsModalOpen: boolean;
   activeTool: 'select' | 'draw_poly' | 'split' | 'snap';
 
   setTerritories: (territories: Territory[]) => void;
@@ -16,6 +17,7 @@ interface TerritoryStore {
   setFilterStatus: (status: string) => void;
   setSearchQuery: (query: string) => void;
   setIsS13ModalOpen: (open: boolean) => void;
+  setIsAnalyticsModalOpen: (open: boolean) => void;
   setActiveTool: (tool: 'select' | 'draw_poly' | 'split' | 'snap') => void;
 }
 
@@ -30,6 +32,8 @@ export const useTerritoryStore = create<TerritoryStore>((set, get) => ({
       assignedTo: 'Bro. Emeka Okon',
       assignedDate: '2026-10-12',
       dueDate: '2027-02-12',
+      lastCompletedDate: '2026-06-15',
+      monthsSinceWorked: 1,
       progress: 0.65,
       totalAddresses: 142,
       completedAddresses: 92,
@@ -46,6 +50,8 @@ export const useTerritoryStore = create<TerritoryStore>((set, get) => ({
       assignedTo: 'Bro. Arthur Davies',
       assignedDate: '2026-11-01',
       dueDate: '2027-03-01',
+      lastCompletedDate: '2026-04-10',
+      monthsSinceWorked: 3,
       progress: 0.40,
       totalAddresses: 180,
       completedAddresses: 72,
@@ -60,6 +66,8 @@ export const useTerritoryStore = create<TerritoryStore>((set, get) => ({
       region: 'New York (Americas)',
       status: 'available',
       assignedTo: null,
+      lastCompletedDate: '2026-03-15',
+      monthsSinceWorked: 8, // Overdue / Cold (>6 months)
       progress: 0.0,
       totalAddresses: 115,
       completedAddresses: 0,
@@ -76,6 +84,8 @@ export const useTerritoryStore = create<TerritoryStore>((set, get) => ({
       assignedTo: 'Bro. Lucas Silva',
       assignedDate: '2026-10-15',
       dueDate: '2027-02-15',
+      lastCompletedDate: '2026-07-20',
+      monthsSinceWorked: 2,
       progress: 0.85,
       totalAddresses: 210,
       completedAddresses: 178,
@@ -91,11 +101,28 @@ export const useTerritoryStore = create<TerritoryStore>((set, get) => ({
       assignedTo: 'Sis. Yuka Tanaka',
       assignedDate: '2026-08-01',
       dueDate: '2026-12-01',
+      lastCompletedDate: '2026-11-20',
+      monthsSinceWorked: 0,
       progress: 1.0,
       totalAddresses: 96,
       completedAddresses: 96,
       returnVisitsCount: 15,
       dncCount: 1,
+    },
+    {
+      id: 't-04',
+      number: '#04',
+      name: 'Trans-Amadi Industrial Layout',
+      region: 'Port Harcourt (Africa)',
+      status: 'available',
+      assignedTo: null,
+      lastCompletedDate: '2026-02-01',
+      monthsSinceWorked: 9, // Overdue (>6 months)
+      progress: 0.0,
+      totalAddresses: 84,
+      completedAddresses: 0,
+      returnVisitsCount: 2,
+      dncCount: 0,
     },
   ],
   selectedTerritoryId: 't-14',
@@ -109,6 +136,7 @@ export const useTerritoryStore = create<TerritoryStore>((set, get) => ({
   filterStatus: 'all',
   searchQuery: '',
   isS13ModalOpen: false,
+  isAnalyticsModalOpen: false,
   activeTool: 'select',
 
   setTerritories: (territories) => set({ territories }),
@@ -119,5 +147,6 @@ export const useTerritoryStore = create<TerritoryStore>((set, get) => ({
   setFilterStatus: (filterStatus) => set({ filterStatus }),
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setIsS13ModalOpen: (isS13ModalOpen) => set({ isS13ModalOpen }),
+  setIsAnalyticsModalOpen: (isAnalyticsModalOpen) => set({ isAnalyticsModalOpen }),
   setActiveTool: (activeTool) => set({ activeTool }),
 }));

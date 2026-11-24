@@ -7,6 +7,8 @@ export interface Territory {
   assignedTo?: string | null;
   assignedDate?: string | null;
   dueDate?: string | null;
+  lastCompletedDate?: string | null;
+  monthsSinceWorked?: number;
   progress: number;
   totalAddresses: number;
   completedAddresses: number;
@@ -31,4 +33,27 @@ export interface Publisher {
   displayName: string;
   role: 'publisher' | 'auxiliary_pioneer' | 'regular_pioneer' | 'servant' | 'elder';
   assignedTerritories: string[];
+}
+
+export interface PioneerPacing {
+  publisherName: string;
+  role: 'regular_pioneer' | 'auxiliary_pioneer';
+  currentHours: number;
+  monthlyGoal: number;
+  requiredDailyPace: number; // hours/day remaining
+  projectedHours: number;
+  status: 'on_track' | 'ahead' | 'needs_attention';
+}
+
+export interface S8ReportSummary {
+  serviceYear: string;
+  totalCongregationTerritories: number;
+  workedOnce: number;
+  workedTwice: number;
+  workedThreePlus: number;
+  unworkedInServiceYear: number;
+  coveragePercentage: number;
+  averageCompletionDays: number;
+  businessTerritoriesCount: number;
+  foreignLanguageCount: number;
 }

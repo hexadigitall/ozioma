@@ -22,6 +22,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
   int _placements = 0;
   int _videos = 0;
   int _bibleStudies = 0;
+  int _monthlyGoalHours = 50; // Standard Regular Pioneer 50h goal
 
   void _toggleTimer() {
     HapticFeedback.mediumImpact();
@@ -143,6 +144,92 @@ Logged via Ozioma Platform
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         children: [
+          // Monthly Goal & Pioneer Pacing Dashboard Card
+          StreamBuilder<List<ServiceLogItem>>(
+            stream: logDao.watchMonthlyLogs(currentMonthKey),
+            builder: (context, snapshot) {
+              final logs = snapshot.data ?? [];
+              final totalMins = logs.fold<int>(0, (sum, l) => sum + l.durationMinutes);
+              final totalHours = totalMins / 60.0;
+              final now = DateTime.now();
+              final lastDayOfMonth = DateTime(now.year, now.month + 1, 0).day;
+              final daysRemaining = (lastDayOfMonth - now.day) + 1;
+              final hoursRemaining = (_monthlyGoalHours - totalHours).clamp(0.0, 999.0);
+              final dailyPace = daysRemaining > 0 ? (hoursRemaining / daysRemaining) : 0.0;
+              final progress = _monthlyGoalHours > 0 ? (totalHours / _monthlyGoalHours).clamp(0.0, 1.0) : 0.0;
+
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Monthly Goal & Pioneer Pacing',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                          DropdownButton<int>(
+                            value: _monthlyGoalHours,
+                            isDense: true,
+                            underline: const SizedBox(),
+                            items: const [
+                              DropdownMenuItem(value: 50, child: Text('50h (Pioneer)')),
+                              DropdownMenuItem(value: 30, child: Text('30h (Auxiliary)')),
+                              DropdownMenuItem(value: 15, child: Text('15h (Auxiliary)')),
+                              DropdownMenuItem(value: 10, child: Text('10h (Personal)')),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) setState(() => _monthlyGoalHours = val);
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${totalHours.toStringAsFixed(1)} / ${_monthlyGoalHours}h',
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                          ),
+                          Text(
+                            '${(progress * 100).toStringAsFixed(0)}%',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: progress >= 1.0 ? SunlightPalette.highVisGreen : SunlightPalette.sunlightYellow,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 8,
+                        borderRadius: BorderRadius.circular(4),
+                        backgroundColor: Colors.grey.shade800,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          progress >= 1.0 ? SunlightPalette.highVisGreen : SunlightPalette.sunlightYellow,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        daysRemaining > 0
+                          ? '$daysRemaining days remaining • ${dailyPace.toStringAsFixed(1)} h/day needed'
+                          : 'End of service month reached',
+                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+
           // Timer Card
           Card(
             child: Padding(
