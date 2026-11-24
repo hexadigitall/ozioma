@@ -20,15 +20,15 @@ Any code modification, PR, or architecture proposal must strictly adhere to thes
    - **Desktop:** Tauri core uses native Rust SQLite (`rusqlite` / `sqlx`) or PowerSync Web/Core SDK synchronized against the same Supabase/PowerSync schema.
    - **STRICT PROHIBITION:** Never instantiate a separate SQLite/Drift database alongside PowerSync. Never write to one database while reading from another.
 
-3. **Zero-Cloud PII & Theocratic Privacy:**
+3. **Zero-Cloud PII & Worldwide Theocratic Privacy:**
    - Householder names, phone numbers, family details, and personal visit notes are classified as **Restricted Local PII**.
-   - Restricted Local PII must remain local on the device, encrypted with AES-256-GCM via the OS hardware keystore (Android Keystore / iOS Keychain on Mobile; OS Keyring / Credential Manager on Desktop).
-   - Cloud synchronization via PowerSync is limited to anonymized territory status, boundaries, and assignment metadata.
+   - Restricted Local PII must remain local on the device, encrypted with AES-256-GCM via the OS hardware keystore (Android Keystore / iOS Keychain on Mobile; OS Keyring / Credential Manager on Desktop), compliant with international privacy frameworks (GDPR, CCPA, LGPD, NDPA, APPI, POPIA).
+   - Cloud synchronization via PowerSync is strictly limited to anonymized territory status, boundaries, and assignment metadata.
    - **STRICT PROHIBITION:** Never create Supabase tables, PowerSync rules, or API endpoints that transmit unencrypted householder personal notes to public cloud servers.
 
-4. **Offline Primacy & Cloudflare R2 / Supabase CDN Vector Tile Distribution:**
+4. **Offline Primacy & Worldwide Cloudflare R2 / Supabase CDN Vector Tile Distribution:**
    - The UI must **never** make direct HTTP/REST calls to Supabase to fetch or update application data. All reads are reactive streams from the local database.
-   - Offline vector map tiles for Port Harcourt, Lagos Metro, and Calabar are packaged as PMTiles/MBTiles and distributed via a dedicated Supabase Storage bucket / Cloudflare R2 CDN with range-request and resume support.
+   - Offline vector map tiles across global preaching territories (Americas, Europe, Africa, Asia-Pacific) are packaged as PMTiles/MBTiles and distributed via a dedicated Supabase Storage bucket / Cloudflare R2 CDN with HTTP range-request and chunk-resume support.
    - **STRICT PROHIBITION:** Never implement mock download loops. Tile downloads must fetch real binary packages with verifiable SHA-256 checksums and stream into the local tile cache.
 
 5. **No Fake Mocks or Simulated Delays in Production Code:**

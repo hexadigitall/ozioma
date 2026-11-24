@@ -2,7 +2,7 @@
 
 **Platform:** Ozioma (Dual-Platform Mobile & Native Desktop)  
 **Classification:** Canonical Theocratic Domain Reference & Content Architecture  
-**Target Context:** Global Field Ministry with Special Focus on West African Field Realities (Nigeria: Port Harcourt, Lagos, Calabar)  
+**Target Context:** Worldwide Field Ministry & Congregation Administration across 240+ Lands and Territories (Global Scale with Zero-Cloud PII Invariants)  
 
 ---
 
@@ -247,29 +247,67 @@ $$\text{Daily Target (hrs)} = \frac{50 - \text{Hours Completed to Date}}{\text{D
 
 ---
 
-## 6. Multilingual Theocratic Dictionary & Localization
+## 6. Worldwide Multilingual Theocratic Dictionary & Localization
 
-Field ministry across Nigeria and West Africa is intrinsically multilingual. Ozioma provides complete localization across six core languages:
+Field ministry across 240+ lands is intrinsically multilingual. Ozioma provides unified data modeling and theocratic localization across major global preaching languages:
+
+### 6.1 Core Global Preaching Languages
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                              THEOCRATIC TERM TRANSLATIONS                              │
-├──────────────────────┬──────────────────────┬──────────────────┬───────────────────────┤
-│ English              │ Nigerian Pidgin      │ Yoruba           │ Igbo                  │
-├──────────────────────┼──────────────────────┼──────────────────┼───────────────────────┤
-│ Field Ministry       │ Field Service        │ Iṣẹ́ Ìwàásù       │ Ozi Ubi               │
-│ Good News            │ Good News            │ Ìhìn Rere        │ Oziọma                │
-│ Territory            │ Territory            │ Ìpínlẹ̀ Ìwàásù    │ Ókè-Ala / Teritori    │
-│ Return Visit         │ Return Visit         │ Ìpadàbẹ̀wò       │ Nletaghachi           │
-│ Bible Study          │ Bible Study          │ Ìkẹ́kọ̀ọ́ Bíbélì    │ Ọmụmụ Baịbụl          │
-│ Not At Home          │ Dem No Dey House     │ Kò Sí Nílé       │ Anọghị n'Ụlọ          │
-│ Do Not Call          │ Make You No Call     │ Ẹ Má Ṣe Wá Síbẹ̀  │ Akpọnala / Abịala     │
-│ Publisher            │ Publisher            │ Akéde            │ Onye Nkwusa           │
-│ Pioneer              │ Pioneer              │ Aṣáájú-Ọ̀nà       │ Onye Ọsụ Ụzọ          │
-│ Service Overseer     │ Service Overseer     │ Alábòójútó Iṣẹ́    │ Onye Nlekọta Ozi      │
-│ Body of Elders       │ Body of Elders       │ Ìgbìmọ̀ Àwọn Alàgbà│ Òtù Ndị Okenye        │
-│ Enjoy Life Forever!  │ Enjoy Life Forever!  │ Gbádùn Ayé Rẹ Títí| Nwee Obi Ụtọ Ruo Ebighị│
-└──────────────────────┴──────────────────────┴──────────────────┴───────────────────────┘
+┌──────────────────────┬──────────────────────┬──────────────────────┬──────────────────────┐
+│ English              │ Spanish (Español)    │ Portuguese (Português│ French (Français)    │
+├──────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ Field Ministry       │ Ministerio del campo │ Ministério de campo  │ Ministère du champ   │
+│ Good News            │ Buenas noticias      │ Boas novas           │ Bonne nouvelle       │
+│ Territory            │ Territorio           │ Território           │ Territoire           │
+│ Return Visit         │ Revisita             │ Revisita             │ Nouvelle visite      │
+│ Bible Study          │ Curso bíblico        │ Estudo bíblico       │ Cours biblique       │
+│ Not At Home          │ No en casa           │ Não estava           │ Absent               │
+│ Do Not Call          │ No llamar            │ Não visitar          │ Ne pas visiter       │
+│ Publisher            │ Publicador           │ Publicador           │ Proclamateur         │
+│ Regular Pioneer      │ Precursor regular    │ Pioneiro regular     │ Pionnier permanent   │
+│ Service Overseer     │ Superintendente serv.│ Sup. de serviço      │ Surv. de service     │
+│ Body of Elders       │ Cuerpo de ancianos   │ Corpo de anciãos     │ Collège d'anciens    │
+│ Enjoy Life Forever!  │ ¡Disfrute de la vida!│ Viva Feliz Para Semp.│ Vivez pour toujours !│
+└──────────────────────┴──────────────────────┴──────────────────────┴──────────────────────┘
+```
+
+```
+┌──────────────────────┬──────────────────────┬──────────────────────┬──────────────────────┐
+│ German (Deutsch)     │ Tagalog              │ Swahili (Kiswahili)  │ Japanese (日本語)    │
+├──────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ Predigtdienst        │ Larangan ng minister.│ Huduma ya shambani   │ 野外奉仕             │
+│ Gute Botschaft       │ Mabuting balita      │ Habari njema         │ 良い知らせ           │
+│ Gebiet               │ Teritoryo            │ Eneo                 │ 区域                 │
+│ Rückbesuch           │ Pagdalaw-muli        │ Ziara ya kurudia     │ 再訪問               │
+│ Bibelstudium         │ Pag-aaral sa Bibliya │ Funzo la Biblia      │ 聖書研究             │
+│ Nicht angetroffen    │ Walang tao           │ Hakuwepo             │ 不在                 │
+│ Nicht vorsprechen    │ Huwag dadalawin      │ Usirudi tena         │ 訪問拒否             │
+│ Verkündiger          │ Mamamahayag          │ Mhubiri              │ 伝道者               │
+│ Allgemeiner Pionier  │ Regular pioneer      │ Painia wa kawaida    │ 開拓者               │
+│ Dienstaufseher       │ Tagapangasiwa sa pag.│ Mwangalizi wa huduma │ 奉仕監督             │
+│ Ältestenschaft       │ Lupon ng matatanda   │ Baraza la wazee      │ 長老団               │
+│ Glücklich – für imm. │ Masisiyahan Ka Magpal│ Furahia Maisha Milele│ いつまでも幸せに！   │
+└──────────────────────┴──────────────────────┴──────────────────────┴──────────────────────┘
+```
+
+```
+┌──────────────────────┬──────────────────────┬──────────────────────┬──────────────────────┐
+│ Nigerian Pidgin      │ Yoruba               │ Igbo                 │ Hausa                │
+├──────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ Field Service        │ Iṣẹ́ Ìwàásù           │ Ozi Ubi              │ Wa'azi               │
+│ Good News            │ Ìhìn Rere            │ Oziọma               │ Biyayyar Albishir    │
+│ Territory            │ Ìpínlẹ̀ Ìwàásù        │ Ókè-Ala / Teritori   │ Yanki                │
+│ Return Visit         │ Ìpadàbẹ̀wò           │ Nletaghachi          │ Ziyara               │
+│ Bible Study          │ Ìkẹ́kọ̀ọ́ Bíbélì        │ Ọmụmụ Baịbụl          │ Nazarin Littafi Mai M│
+│ Dem No Dey House     │ Kò Sí Nílé           │ Anọghị n'Ụlọ         │ Ba a gida            │
+│ Make You No Call     │ Ẹ Má Ṣe Wá Síbẹ̀      │ Akpọnala / Abịala    │ Kada a sake zuwa     │
+│ Publisher            │ Akéde                │ Onye Nkwusa          │ Mai shela            │
+│ Pioneer              │ Aṣáájú-Ọ̀nà           │ Onye Ọsụ Ụzọ         │ Majagaba             │
+│ Service Overseer     │ Alábòójútó Iṣẹ́        │ Onye Nlekọta Ozi     │ Manajan Wa'azi       │
+│ Body of Elders       │ Ìgbìmọ̀ Àwọn Alàgbà    │ Òtù Ndị Okenye       │ Majalisar Dattijai   │
+│ Enjoy Life Forever!  │ Gbádùn Ayé Rẹ Títí   │ Nwee Obi Ụtọ Ruo Ebi.│ Ji Daɗin Rai Har Ab. │
+└──────────────────────┴──────────────────────┴──────────────────────┴──────────────────────┘
 ```
 
 ---

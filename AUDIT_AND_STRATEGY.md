@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary & Forensic State of the Codebase
 
-Ozioma ("Good News" in Igbo) is conceived as an offline-first, privacy-focused field ministry platform tailored for Jehovah's Witnesses operating in demanding environments—specifically high-density, low-connectivity urban hubs such as Port Harcourt, Lagos, and Calabar, Nigeria. 
+Ozioma ("Good News" in Igbo) is conceived as an offline-first, privacy-focused field ministry platform engineered for Jehovah's Witnesses operating across 240+ lands worldwide—from high-density equatorial urban centers to rural expanses and global metropolitan circuits (Americas, Europe, Africa, Asia-Pacific). 
 
 The application promises to eliminate paper territory cards (S-13), prevent lost return visit records, withstand erratic GSM network conditions, enforce stringent householder data privacy, and provide seamless congregation synchronization between publishers and elders.
 

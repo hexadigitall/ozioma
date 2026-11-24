@@ -41,7 +41,7 @@ class _TerritoriesScreenState extends ConsumerState<TerritoriesScreen> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Row(
-              children: ['All', 'Port Harcourt', 'Lagos Metro', 'Calabar'].map((region) {
+              children: ['All', 'Americas', 'Europe', 'Africa', 'Asia-Pacific'].map((region) {
                 final isSelected = selectedRegion == region;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),

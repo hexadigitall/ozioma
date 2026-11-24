@@ -1,7 +1,7 @@
 [package]
 name = "ozioma-desktop"
 version = "0.1.0"
-description = "Ozioma Desktop — Dedicated Native Congregation Field Administration & GIS Cartography"
+description = "Ozioma Desktop — Dedicated Native Worldwide Congregation Field Administration & GIS Cartography"
 authors = ["Ozioma Engineering Team"]
 edition = "2021"
 

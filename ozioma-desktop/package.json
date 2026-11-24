@@ -2,6 +2,7 @@
   "name": "ozioma-desktop",
   "private": true,
   "version": "1.0.0",
+  "description": "Ozioma Desktop — Dedicated Native Worldwide Congregation Field Administration & GIS Cartography",
   "type": "module",
   "scripts": {
     "dev": "vite",
