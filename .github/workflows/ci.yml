@@ -1,0 +1,80 @@
+name: Ozioma Multi-Platform CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  mobile-ci:
+    name: Mobile Client Validation (Flutter)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Mobile Dependencies
+        run: |
+          cd ozioma-mobile
+          flutter pub get
+
+      - name: Run Static Analysis
+        run: |
+          cd ozioma-mobile
+          flutter analyze lib
+
+      - name: Run Unit Tests
+        run: |
+          cd ozioma-mobile
+          flutter test test/core/sync_conflict_test.dart test/features/presence_voice_test.dart
+
+  desktop-ci:
+    name: Desktop Suite Validation (Tauri 2.0 & React 19)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'ozioma-desktop/package.json'
+
+      - name: Install Desktop Frontend Dependencies
+        run: |
+          cd ozioma-desktop
+          npm install
+
+      - name: Typecheck Desktop Frontend (TypeScript)
+        run: |
+          cd ozioma-desktop
+          npx tsc --noEmit
+
+      - name: Set up Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux Desktop Dependencies (WebKitGTK & Tauri Prereqs)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Verify Rust GIS & Tauri Core Compilation
+        run: |
+          cd ozioma-desktop/src-tauri
+          cargo check
