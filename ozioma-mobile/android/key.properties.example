@@ -1,0 +1,13 @@
+# ==============================================================================
+# OZIOMA ANDROID RELEASE SIGNING PROPERTIES TEMPLATE
+# ==============================================================================
+# Instructions:
+# 1. Copy this file to: android/key.properties
+# 2. Fill in your release keystore path and credentials
+# 3. android/key.properties is git-ignored and will NEVER be committed to Git.
+# ==============================================================================
+
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=upload
+storeFile=../upload-keystore.jks
