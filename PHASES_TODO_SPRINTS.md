@@ -106,22 +106,22 @@
 **Goal:** Connect mobile clients to Supabase Postgres via PowerSync delta replication, provide real-time brother presence, and configure push notifications.
 
 #### Sprint 7: PowerSync Cloud Sync & Dynamic Buckets
-- [ ] **PowerSync Backend Configuration**
-  - [ ] Deploy `powersync_rules.yaml` with dynamic parameter filtering on `profiles.congregation_id`.
-  - [ ] Configure upload batch handler in `SupabaseConnector` using Supabase v2 syntax with idempotent upserts.
-  - [ ] Test offline-to-online transition: simulate 50 offline door changes; verify conflict resolution (Last-Write-Wins via `updated_at`).
-- [ ] **Supabase Row-Level Security (RLS) Hardening**
-  - [ ] Enforce congregation isolation policies across `territories`, `addresses`, and `service_logs`.
-  - [ ] Restrict elder role permissions for assigning and archiving territories.
+- [x] **PowerSync Backend Configuration**
+  - [x] Deploy `powersync_rules.yaml` with dynamic parameter filtering on `profiles.congregation_id`.
+  - [x] Configure upload batch handler in `SupabaseConnector` using Supabase v2 syntax with idempotent upserts.
+  - [x] Test offline-to-online transition: simulate 50 offline door changes; verify conflict resolution (Last-Write-Wins via `updated_at`).
+- [x] **Supabase Row-Level Security (RLS) Hardening**
+  - [x] Enforce congregation isolation policies across `territories`, `addresses`, and `service_logs`.
+  - [x] Restrict elder role permissions for assigning and archiving territories.
 
 #### Sprint 8: Service Group Presence & Voice Guidance
-- [ ] **Privacy-Preserving Field Presence**
-  - [ ] Connect `PresenceService` to live Supabase Realtime Channels scoped to active territory ID.
-  - [ ] Enforce auto-expiration: location broadcast automatically terminates at 12:00 PM or after 4 hours.
-  - [ ] Display brother pins on map with distance indicators and randomized privacy offsets ($\pm 15$m).
-- [ ] **Voice Guidance Engine**
-  - [ ] Integrate offline Text-To-Speech (`flutter_tts`) for navigating to territory START/STOP pins.
-  - [ ] Implement proximity triggers: "200 meters to Territory #14 START point."
+- [x] **Privacy-Preserving Field Presence**
+  - [x] Connect `PresenceService` to live Supabase Realtime Channels scoped to active territory ID.
+  - [x] Enforce auto-expiration: location broadcast automatically terminates at 12:00 PM or after 4 hours.
+  - [x] Display brother pins on map with distance indicators and randomized privacy offsets ($\pm 15$m).
+- [x] **Voice Guidance Engine**
+  - [x] Integrate offline Text-To-Speech (`flutter_tts`) for navigating to territory START/STOP pins.
+  - [x] Implement proximity triggers: "200 meters to Territory #14 START point."
 
 ---
 
@@ -142,32 +142,32 @@
   - [x] Support window resizing, high-DPI scaling, and S-13 vector PDF card preview modal.
 
 #### Sprint 10: Precision GIS Cartography & Boundary Drawing Tools (Rust Core)
-- [ ] **Rust-Powered Vector Geometry Tools (`geo` / `geos`)**
-  - [ ] Expose native geometry operations via Tauri commands: polygon area, centroid calculation, topological intersection.
-  - [ ] Polygon drawing mode with click-to-place vertex and vertex snapping ($\pm 5\text{px}$ visual guides).
-  - [ ] Vertex manipulation: click-and-drag existing polygon boundaries to adjust for new real estate developments.
-  - [ ] Territory splitting tool: draw an intersection line across a polygon to automatically carve it into two sub-territories (#14A and #14B).
-- [ ] **Boundary Validation & Conflict Engine**
-  - [ ] Detect overlapping polygons between adjacent territories.
-  - [ ] Calculate exact boundary area in hectares and estimated residential door count.
+- [x] **Rust-Powered Vector Geometry Tools (`geo` / `geos`)**
+  - [x] Expose native geometry operations via Tauri commands: polygon area, centroid calculation, topological intersection.
+  - [x] Polygon drawing mode with click-to-place vertex and vertex snapping ($\pm 5\text{px}$ visual guides).
+  - [x] Vertex manipulation: click-and-drag existing polygon boundaries to adjust for new real estate developments.
+  - [x] Territory splitting tool: draw an intersection line across a polygon to automatically carve it into two sub-territories (#14A and #14B).
+- [x] **Boundary Validation & Conflict Engine**
+  - [x] Detect overlapping polygons between adjacent territories.
+  - [x] Calculate exact boundary area in hectares and estimated residential door count.
 
 #### Sprint 11: S-13 Territory Card Engine & Native Print Spooling
-- [ ] **Official S-13 Form Generator in Rust**
-  - [ ] Render official S-13 (Territory Assignment Card) vector PDF layouts using Rust `printpdf` or headless print driver.
-  - [ ] Embed high-resolution vector territory boundary mini-map on front of card.
-  - [ ] List street bounds, boundary streets, and QR code for instant mobile publisher scan.
-- [ ] **Batch Print Spooler**
-  - [ ] Multi-up printing layout (4 cards per A4 sheet, front-and-back duplex orientation).
-  - [ ] Spool directly to OS native print dialogs (Windows GDI/Print Spooler, macOS CUPS).
+- [x] **Official S-13 Form Generator in Rust**
+  - [x] Render official S-13 (Territory Assignment Card) vector PDF layouts using Rust `printpdf` or headless print driver.
+  - [x] Embed high-resolution vector territory boundary mini-map on front of card.
+  - [x] List street bounds, boundary streets, and QR code for instant mobile publisher scan.
+- [x] **Batch Print Spooler**
+  - [x] Multi-up printing layout (4 cards per A4 sheet, front-and-back duplex orientation).
+  - [x] Spool directly to OS native print dialogs (Windows GDI/Print Spooler, macOS CUPS).
 
 #### Sprint 12: Bulk Data Operations & Congregation Importer
-- [ ] **Excel / CSV Master Importer**
-  - [ ] High-speed streaming CSV/XLSX parser in Rust (via `calamine` crate) for master street and address lists.
-  - [ ] Fuzzy address matching and geocoding pipeline.
-- [ ] **Local Offline DuckDB / SQLite Archive & Keyring**
-  - [ ] Secure local encryption keys via OS Keyring / Credential Manager.
-  - [ ] Enable local encrypted database backups to USB / external drives for offline disaster recovery.
-  - [ ] Export congregation records to KML/GeoJSON for branch office reporting.
+- [x] **Excel / CSV Master Importer**
+  - [x] High-speed streaming CSV/XLSX parser in Rust (via `calamine` crate) for master street and address lists.
+  - [x] Fuzzy address matching and geocoding pipeline.
+- [x] **Local Offline DuckDB / SQLite Archive & Keyring**
+  - [x] Secure local encryption keys via OS Keyring / Credential Manager.
+  - [x] Enable local encrypted database backups to USB / external drives for offline disaster recovery.
+  - [x] Export congregation records to KML/GeoJSON for branch office reporting.
 
 ---
 

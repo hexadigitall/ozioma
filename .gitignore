@@ -19,6 +19,8 @@ build/
 *.db-shm
 *.db-wal
 offline_tiles/
+.appdata/
+.localappdata/
 
 # OS Artifacts
 .DS_Store

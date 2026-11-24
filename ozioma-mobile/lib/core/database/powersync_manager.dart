@@ -2,6 +2,7 @@ import 'package:powersync/powersync.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'powersync_schema.dart';
+export '../utils/sync_conflict_resolver.dart';
 
 /// Single unified local PowerSync database manager.
 class PowerSyncManager {
@@ -59,11 +60,17 @@ class OziomaSupabaseConnector extends PowerSyncBackendConnector {
 
     for (var op in batch.crud) {
       final table = op.table;
-      if (op.opData != null && (op.op == UpdateType.put || op.op == UpdateType.patch)) {
-        final data = Map<String, dynamic>.from(op.opData!);
-        await supabase.from(table).upsert(data);
-      } else if (op.op == UpdateType.delete) {
-        await supabase.from(table).delete().eq('id', op.id);
+      try {
+        if (op.opData != null && (op.op == UpdateType.put || op.op == UpdateType.patch)) {
+          final data = Map<String, dynamic>.from(op.opData!);
+          // Guarantee updated_at for LWW conflict resolution
+          data['updated_at'] ??= DateTime.now().toUtc().toIso8601String();
+          await supabase.from(table).upsert(data, onConflict: 'id');
+        } else if (op.op == UpdateType.delete) {
+          await supabase.from(table).delete().eq('id', op.id);
+        }
+      } catch (e) {
+        rethrow;
       }
     }
 

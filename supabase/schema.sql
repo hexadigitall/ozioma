@@ -105,6 +105,12 @@ ALTER TABLE addresses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE service_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vector_tile_manifests ENABLE ROW LEVEL SECURITY;
 
+-- Congregations: Members can view their own congregation record
+CREATE POLICY "Congregation members can view own congregation" ON congregations
+  FOR SELECT USING (
+    id = (SELECT congregation_id FROM profiles WHERE id = auth.uid())
+  );
+
 -- Profiles: Users can read congregation members; can update own profile
 CREATE POLICY "Profiles are readable by congregation peers" ON profiles
   FOR SELECT USING (
@@ -114,7 +120,7 @@ CREATE POLICY "Profiles are readable by congregation peers" ON profiles
 CREATE POLICY "Users can update own profile" ON profiles
   FOR UPDATE USING (id = auth.uid());
 
--- Territories: Congregation Isolation
+-- Territories: Congregation Isolation & Role Access
 CREATE POLICY "Territories congregation isolation" ON territories
   FOR SELECT USING (
     congregation_id = (SELECT congregation_id FROM profiles WHERE id = auth.uid())
@@ -126,6 +132,11 @@ CREATE POLICY "Elders have full write access to congregation territories" ON ter
       SELECT 1 FROM profiles
       WHERE id = auth.uid() AND role IN ('elder', 'servant') AND congregation_id = territories.congregation_id
     )
+  );
+
+CREATE POLICY "Publishers can update assigned territory status" ON territories
+  FOR UPDATE USING (
+    assigned_to = auth.uid()
   );
 
 -- Addresses: Readable and updateable by publishers working the congregation
@@ -154,3 +165,30 @@ CREATE POLICY "Service logs are strictly user-private" ON service_logs
 -- Tile Manifests: Public read for all authenticated users
 CREATE POLICY "Authenticated users can read tile manifests" ON vector_tile_manifests
   FOR SELECT TO authenticated USING (true);
+
+-- ==============================================================================
+-- AUTOMATIC TIMESTAMP & CONFLICT RESOLUTION TRIGGERS
+-- ==============================================================================
+
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS set_profiles_updated_at ON profiles;
+CREATE TRIGGER set_profiles_updated_at BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
+
+DROP TRIGGER IF EXISTS set_territories_updated_at ON territories;
+CREATE TRIGGER set_territories_updated_at BEFORE UPDATE ON territories FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
+
+DROP TRIGGER IF EXISTS set_addresses_updated_at ON addresses;
+CREATE TRIGGER set_addresses_updated_at BEFORE UPDATE ON addresses FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
+
+DROP TRIGGER IF EXISTS set_service_logs_updated_at ON service_logs;
+CREATE TRIGGER set_service_logs_updated_at BEFORE UPDATE ON service_logs FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
+
+DROP TRIGGER IF EXISTS set_vector_tile_manifests_updated_at ON vector_tile_manifests;
+CREATE TRIGGER set_vector_tile_manifests_updated_at BEFORE UPDATE ON vector_tile_manifests FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();

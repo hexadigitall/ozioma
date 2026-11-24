@@ -1,24 +1,51 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
+import '../core/utils/presence_jitter.dart';
+
+export '../core/utils/presence_jitter.dart';
 
 /// Realtime presence: share location with brothers in same territory during service hours.
-/// Auto-off outside 8am-12pm, opt-in toggle, automatically expires.
+/// Features:
+/// - Auto-off outside 8:00 AM - 12:00 PM
+/// - Max 4-hour session auto-expiration timer
+/// - Randomized $\pm 15$m privacy jitter on coordinates
+/// - Scoped Supabase Realtime channel per territory
 class PresenceService {
   final supabase = Supabase.instance.client;
   RealtimeChannel? _channel;
   StreamSubscription<Position>? _posSub;
+  Timer? _expirationTimer;
+  DateTime? _sessionStartTime;
+  DateTime? _sessionExpiresAt;
+
   final StreamController<Map<String, dynamic>> _brothersController =
       StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get brotherLocationsStream => _brothersController.stream;
+  DateTime? get sessionExpiresAt => _sessionExpiresAt;
+  bool get isBroadcasting => _channel != null;
 
-  Future<void> startBroadcasting(String territoryId, String publisherId) async {
+  Future<bool> startBroadcasting(String territoryId, String publisherId) async {
     final now = DateTime.now();
-    if (now.hour < 8 || now.hour >= 12) return; // field service hours only
+    if (!isBroadcastPermitted(now)) return false;
 
-    _channel = supabase.channel('territory:$territoryId', opts: const RealtimeChannelConfig(ack: true));
-    
+    _sessionStartTime = now;
+    final todayNoon = DateTime(now.year, now.month, now.day, 12, 0, 0);
+    final maxFourHours = now.add(const Duration(hours: 4));
+    _sessionExpiresAt = todayNoon.isBefore(maxFourHours) ? todayNoon : maxFourHours;
+
+    final remaining = _sessionExpiresAt!.difference(now);
+    _expirationTimer?.cancel();
+    _expirationTimer = Timer(remaining, () {
+      stopBroadcasting();
+    });
+
+    _channel = supabase.channel(
+      'territory:$territoryId',
+      opts: const RealtimeChannelConfig(ack: true),
+    );
+
     _channel!.onPresenceSync((_) {
       final state = _channel!.presenceState();
       final Map<String, dynamic> brothers = {};
@@ -35,19 +62,38 @@ class PresenceService {
     }).subscribe();
 
     _posSub = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium, distanceFilter: 20),
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.medium,
+        distanceFilter: 20,
+      ),
     ).listen((pos) {
+      if (!isBroadcastPermitted(DateTime.now(), sessionStartTime: _sessionStartTime)) {
+        stopBroadcasting();
+        return;
+      }
+
+      // Apply privacy jitter before broadcasting to channel
+      final jittered = applyPrivacyJitter(pos.latitude, pos.longitude);
+
       _channel?.track({
         'publisher_id': publisherId,
         'display_name': 'Bro. Field Partner',
-        'lat': pos.latitude,
-        'lng': pos.longitude,
-        'updated_at': DateTime.now().toIso8601String(),
+        'lat': jittered['lat'],
+        'lng': jittered['lng'],
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+        'expires_at': _sessionExpiresAt?.toUtc().toIso8601String(),
       });
     });
+
+    return true;
   }
 
   Future<void> stopBroadcasting() async {
+    _expirationTimer?.cancel();
+    _expirationTimer = null;
+    _sessionStartTime = null;
+    _sessionExpiresAt = null;
+
     await _posSub?.cancel();
     _posSub = null;
     await _channel?.untrack();

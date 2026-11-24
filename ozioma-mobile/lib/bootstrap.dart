@@ -22,7 +22,7 @@ Future<void> bootstrap() async {
   try {
     await Supabase.initialize(
       url: supabaseUrl,
-      anonKey: supabaseAnonKey,
+      publishableKey: supabaseAnonKey,
     );
   } catch (e) {
     debugPrint('Supabase offline initialization: $e');

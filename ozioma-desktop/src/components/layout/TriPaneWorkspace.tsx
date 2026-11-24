@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTerritoryStore } from '../../stores/territoryStore';
 import { TerritoryTable } from '../tables/TerritoryTable';
 import { GisMapCanvas } from '../gis/GisMapCanvas';
 import { S13CardModal } from '../s13/S13CardModal';
+import { MasterImportModal } from '../importer/MasterImportModal';
 import {
   Map,
   Printer,
@@ -26,6 +27,8 @@ export const TriPaneWorkspace: React.FC = () => {
     activeTool,
     setActiveTool,
   } = useTerritoryStore();
+
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const selectedTerritory = territories.find((t) => t.id === selectedTerritoryId);
 
@@ -53,6 +56,7 @@ export const TriPaneWorkspace: React.FC = () => {
             <span>Print S-13 Cards</span>
           </button>
           <button
+            onClick={() => setIsImportModalOpen(true)}
             className="flex items-center gap-1.5 rounded bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:bg-slate-700"
             title="Bulk CSV / Excel Master Import"
           >
@@ -253,6 +257,11 @@ export const TriPaneWorkspace: React.FC = () => {
       {/* S-13 Print Preview Modal */}
       {isS13ModalOpen && selectedTerritory && (
         <S13CardModal territory={selectedTerritory} onClose={() => setIsS13ModalOpen(false)} />
+      )}
+
+      {/* Excel / CSV Master Import & Theocratic Export Modal */}
+      {isImportModalOpen && (
+        <MasterImportModal onClose={() => setIsImportModalOpen(false)} />
       )}
     </div>
   );

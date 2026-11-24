@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Territory } from '../../types';
-import { Printer, X } from 'lucide-react';
+import { Printer, X, Check, Loader2 } from 'lucide-react';
 
 interface S13CardModalProps {
   territory: Territory;
@@ -8,6 +8,31 @@ interface S13CardModalProps {
 }
 
 export const S13CardModal: React.FC<S13CardModalProps> = ({ territory, onClose }) => {
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [printSuccess, setPrintSuccess] = useState(false);
+
+  const handlePrint = async () => {
+    setIsPrinting(true);
+    setPrintSuccess(false);
+
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      await invoke('generate_s13_pdf', {
+        territoryNumber: territory.number,
+        territoryName: territory.name,
+        congregationName: 'Rumuola Congregation',
+        outputPath: `S13_${territory.number.replace('#', '')}.pdf`,
+      });
+      setPrintSuccess(true);
+    } catch (err) {
+      console.warn('Native Tauri PDF spooler fallback to browser print:', err);
+      window.print();
+      setPrintSuccess(true);
+    } finally {
+      setIsPrinting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-6 backdrop-blur-sm">
       <div className="flex max-h-[90vh] w-[750px] flex-col rounded-xl border border-slate-700 bg-slate-900 shadow-2xl">
@@ -23,7 +48,7 @@ export const S13CardModal: React.FC<S13CardModalProps> = ({ territory, onClose }
 
         {/* Card Vector Preview (Standard Theocratic S-13 Card Layout) */}
         <div className="flex-1 overflow-y-auto p-6 flex justify-center">
-          <div className="w-[500px] bg-white text-slate-900 p-6 rounded shadow border border-slate-300 font-sans text-xs">
+          <div className="w-[500px] bg-white text-slate-900 p-6 rounded shadow border border-slate-300 font-sans text-xs print:w-full print:shadow-none print:border-none">
             {/* Header */}
             <div className="border-b-2 border-slate-900 pb-2 flex justify-between items-start">
               <div>
@@ -92,16 +117,38 @@ export const S13CardModal: React.FC<S13CardModalProps> = ({ territory, onClose }
           <div className="text-xs text-slate-400">
             Layout: 4-up Duplex A4 Vector PDF Spooler (Rust `printpdf`)
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <button
               onClick={onClose}
               className="rounded bg-slate-800 px-4 py-2 text-xs font-semibold hover:bg-slate-700"
             >
               Cancel
             </button>
-            <button className="flex items-center gap-1.5 rounded bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500">
-              <Printer className="h-4 w-4" />
-              <span>Spool to Printer</span>
+            <button
+              onClick={handlePrint}
+              disabled={isPrinting}
+              className={`flex items-center gap-1.5 rounded px-4 py-2 text-xs font-semibold text-white transition ${
+                printSuccess
+                  ? 'bg-emerald-700'
+                  : 'bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50'
+              }`}
+            >
+              {isPrinting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Spooling Vector PDF...</span>
+                </>
+              ) : printSuccess ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  <span>Spool Ready</span>
+                </>
+              ) : (
+                <>
+                  <Printer className="h-4 w-4" />
+                  <span>Spool to Printer</span>
+                </>
+              )}
             </button>
           </div>
         </div>
