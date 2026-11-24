@@ -1,4 +1,4 @@
-package com.example.ozioma
+package com.kovaro.ozioma
 
 import io.flutter.embedding.android.FlutterActivity
 

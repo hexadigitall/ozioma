@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ozioma"
+    namespace = "com.kovaro.ozioma"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "org.ozioma.mobile"
+        applicationId = "com.kovaro.ozioma"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
