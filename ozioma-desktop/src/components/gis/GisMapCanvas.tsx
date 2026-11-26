@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Territory } from '../../types';
-import { Scissors, Check, Sparkles } from 'lucide-react';
+import { useTerritoryStore } from '../../stores/territoryStore';
+import { Scissors, Sparkles, Flame, Radio, MapPin } from 'lucide-react';
 
 interface GisMapCanvasProps {
   territory?: Territory;
@@ -8,213 +9,156 @@ interface GisMapCanvasProps {
 }
 
 export const GisMapCanvas: React.FC<GisMapCanvasProps> = ({ territory, activeTool }) => {
-  const [splitExecuted, setSplitExecuted] = useState(false);
-  const [splitSubPolygons, setSplitSubPolygons] = useState<{
-    polyA: number[][];
-    polyB: number[][];
-  } | null>(null);
+  const {
+    sharedPins,
+    publisherLocations,
+    showHeatmap,
+    setShowHeatmap,
+    splitSelectedTerritory,
+  } = useTerritoryStore();
+
+  const [zoom, setZoom] = useState(1);
 
   const handleExecuteSplit = async () => {
     if (!territory) return;
     try {
       const { invoke } = await import('@tauri-apps/api/core');
-      const res = await invoke<{
-        success: boolean;
-        polygon_a_geojson: string;
-        polygon_b_geojson: string;
-        area_a_ha: number;
-        area_b_ha: number;
-      }>('split_territory_polygon', {
+      await invoke('split_territory_polygon', {
         polygonGeojson: territory.boundaryGeojson || '{"type":"Polygon","coordinates":[]}',
         splitLineGeojson: '{"type":"LineString","coordinates":[[400,100],[400,500]]}',
       });
-
-      if (res.success) {
-        setSplitExecuted(true);
-        setSplitSubPolygons({
-          polyA: [
-            [280, 180],
-            [410, 170],
-            [410, 395],
-            [260, 410],
-          ],
-          polyB: [
-            [410, 170],
-            [540, 160],
-            [590, 380],
-            [410, 395],
-          ],
-        });
-      }
     } catch {
-      // Web fallback: perform visual split into #A and #B
-      setSplitExecuted(true);
-      setSplitSubPolygons({
-        polyA: [
-          [280, 180],
-          [410, 170],
-          [410, 395],
-          [260, 410],
-        ],
-        polyB: [
-          [410, 170],
-          [540, 160],
-          [590, 380],
-          [410, 395],
-        ],
-      });
+      // Browser/Electron runtime executes store topological split directly
     }
+    splitSelectedTerritory(territory.id);
   };
 
-  const handleResetSplit = () => {
-    setSplitExecuted(false);
-    setSplitSubPolygons(null);
-  };
+  const progress = territory?.progress ?? 0;
+  const fillClass =
+    progress >= 0.75
+      ? 'fill-emerald-500/30 stroke-emerald-400'
+      : progress >= 0.3
+      ? 'fill-amber-500/25 stroke-amber-400'
+      : 'fill-red-500/20 stroke-red-400';
+
+  const activeTrackers = publisherLocations.filter((p) => p.isTracking);
 
   return (
-    <div className="relative h-full w-full bg-slate-950 flex items-center justify-center overflow-hidden">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-950">
       {/* Precision Grid Layer */}
       <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
+        className="pointer-events-none absolute inset-0 opacity-15"
         style={{
-          backgroundImage:
-            'radial-gradient(circle at 1px 1px, #94a3b8 1px, transparent 0)',
-          backgroundSize: '24px 24px',
+          backgroundImage: 'radial-gradient(circle at 1px 1px, #94a3b8 1px, transparent 0)',
+          backgroundSize: `${24 * zoom}px ${24 * zoom}px`,
         }}
       />
 
-      {/* Vector Geometry Canvas Simulation */}
-      <svg className="h-full w-full">
-        {territory && (
+      {/* Heatmap Legend & Zoom Controls */}
+      <div className="absolute right-4 top-4 z-10 flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/90 px-3 py-1.5 text-[11px] backdrop-blur">
+        <button
+          onClick={() => setShowHeatmap(!showHeatmap)}
+          className={`flex items-center gap-1 rounded px-2 py-1 font-semibold transition ${
+            showHeatmap ? 'bg-amber-500/20 text-amber-300' : 'text-slate-400 hover:bg-slate-800'
+          }`}
+        >
+          <Flame className="h-3.5 w-3.5" />
+          <span>Heatmap: {showHeatmap ? 'ON' : 'OFF'}</span>
+        </button>
+        <span className="text-slate-600">|</span>
+        <button onClick={() => setZoom((z) => Math.max(0.7, +(z - 0.15).toFixed(2)))} className="px-1.5 text-slate-300 hover:text-white">-</button>
+        <span className="text-slate-400">{Math.round(zoom * 100)}%</span>
+        <button onClick={() => setZoom((z) => Math.min(1.6, +(z + 0.15).toFixed(2)))} className="px-1.5 text-slate-300 hover:text-white">+</button>
+      </div>
+
+      {/* Live Interactive Territory Vector Canvas */}
+      <svg className="h-full w-full" style={{ transform: `scale(${zoom})`, transition: 'transform 150ms ease' }}>
+        {territory ? (
           <g>
-            {!splitExecuted ? (
-              <>
-                {/* Single Shaded Territory Polygon */}
-                <polygon
-                  points="280,180 540,160 590,380 260,410"
-                  className="fill-emerald-500/15 stroke-emerald-400 stroke-2 transition duration-300"
-                />
+            {/* Dynamic Territory Polygon colored by Heatmap saturation */}
+            <polygon
+              points="260,170 560,150 610,390 240,420"
+              className={`${fillClass} stroke-2 transition duration-300`}
+            />
 
-                {/* Split Line Indicator when Split tool is active */}
-                {activeTool === 'split' && (
-                  <g className="animate-pulse">
-                    <line
-                      x1="410"
-                      y1="120"
-                      x2="410"
-                      y2="440"
-                      stroke="#f59e0b"
-                      strokeWidth="2"
-                      strokeDasharray="6,4"
-                    />
-                    <circle cx="410" cy="170" r="4" fill="#f59e0b" />
-                    <circle cx="410" cy="395" r="4" fill="#f59e0b" />
-                  </g>
-                )}
-
-                {/* Vertex Nodes for Mouse Dragging */}
-                {[
-                  [280, 180],
-                  [540, 160],
-                  [590, 380],
-                  [260, 410],
-                ].map(([x, y], i) => (
-                  <circle
-                    key={i}
-                    cx={x}
-                    cy={y}
-                    r={5}
-                    className="fill-white stroke-emerald-600 stroke-2 cursor-move hover:scale-125 transition"
-                  />
-                ))}
-              </>
-            ) : (
-              <>
-                {/* Carved Sub-Territory A (#14A) */}
-                <polygon
-                  points={splitSubPolygons?.polyA.map((p) => p.join(',')).join(' ')}
-                  className="fill-emerald-500/25 stroke-emerald-400 stroke-2 transition duration-300"
-                />
-                <text
-                  x="330"
-                  y="290"
-                  className="fill-emerald-300 font-extrabold text-sm tracking-wider"
-                >
-                  {territory.number}A (7.4 ha)
-                </text>
-
-                {/* Carved Sub-Territory B (#14B) */}
-                <polygon
-                  points={splitSubPolygons?.polyB.map((p) => p.join(',')).join(' ')}
-                  className="fill-amber-500/25 stroke-amber-400 stroke-2 transition duration-300"
-                />
-                <text
-                  x="480"
-                  y="280"
-                  className="fill-amber-300 font-extrabold text-sm tracking-wider"
-                >
-                  {territory.number}B (7.4 ha)
-                </text>
-              </>
+            {/* Heatmap Saturation Nodes when enabled */}
+            {showHeatmap && (
+              <g>
+                <circle cx="350" cy="240" r={45 + progress * 35} fill="#10b981" opacity={0.14} />
+                <circle cx="480" cy="280" r={38 + progress * 30} fill={progress < 0.4 ? '#ef4444' : '#f59e0b'} opacity={0.15} />
+              </g>
             )}
 
-            {/* Start Pin */}
-            <g transform="translate(280, 180)">
-              <circle r={8} className="fill-emerald-500 animate-ping opacity-75" />
-              <circle r={6} className="fill-emerald-400" />
+            {/* Split Line Preview when Split Tool is active */}
+            {activeTool === 'split' && (
+              <g className="animate-pulse">
+                <line x1="410" y1="120" x2="410" y2="450" stroke="#f59e0b" strokeWidth="2" strokeDasharray="6,4" />
+                <circle cx="410" cy="160" r="4" fill="#f59e0b" />
+                <circle cx="410" cy="405" r="4" fill="#f59e0b" />
+              </g>
+            )}
+
+            {/* Start / Stop Boundary Markers */}
+            <g transform="translate(260, 170)">
+              <circle r={7} className="fill-emerald-400" />
               <text x={12} y={4} className="fill-emerald-300 text-[11px] font-bold">
-                START: Oakwood Gate
+                {territory.number} • {territory.name} ({Math.round(progress * 100)}%)
               </text>
             </g>
 
-            {/* Stop Pin */}
-            <g transform="translate(590, 380)">
-              <circle r={6} className="fill-red-500" />
-              <text x={12} y={4} className="fill-red-300 text-[11px] font-bold">
-                STOP: Woji Corner
-              </text>
-            </g>
+            {/* Shared Location Pins from Store */}
+            {sharedPins.map((pin, idx) => (
+              <g key={pin.id} transform={`translate(${310 + idx * 65}, ${315 - idx * 35})`}>
+                <circle r={6} className="fill-cyan-400 stroke-slate-950 stroke-2" />
+                <text x={10} y={4} className="fill-cyan-200 text-[10px] font-semibold">
+                  PIN: {pin.title}
+                </text>
+              </g>
+            ))}
+
+            {/* Live Tracked Publishers from Store */}
+            {activeTrackers.map((loc, idx) => (
+              <g key={loc.id} transform={`translate(${390 + idx * 55}, ${245 + idx * 40})`}>
+                <circle r={10} className="animate-ping fill-blue-500 opacity-50" />
+                <circle r={6} className="fill-blue-400 stroke-white stroke-2" />
+                <text x={10} y={4} className="fill-blue-200 text-[10px] font-bold">
+                  {loc.displayName} ({loc.role})
+                </text>
+              </g>
+            ))}
           </g>
+        ) : (
+          <text x="50%" y="50%" textAnchor="middle" className="fill-slate-500 text-xs">
+            Create or select a territory to view boundaries, heatmap, pins & live publisher trackers
+          </text>
         )}
       </svg>
 
-      {/* Action floating card when Split Tool active */}
+      {/* Split Tool Action Card */}
       {activeTool === 'split' && territory && (
-        <div className="absolute top-16 left-4 z-20 flex items-center gap-2 rounded-lg border border-amber-500/40 bg-slate-900/95 p-2 shadow-2xl backdrop-blur">
+        <div className="absolute left-4 top-16 z-20 flex items-center gap-2 rounded-lg border border-amber-500/40 bg-slate-900/95 p-2 shadow-2xl backdrop-blur">
           <Scissors className="h-4 w-4 text-amber-400" />
-          <span className="text-xs text-slate-200">
-            {splitExecuted ? 'Topological split completed: #14A & #14B' : 'Draw cutting line across polygon'}
-          </span>
-          {!splitExecuted ? (
-            <button
-              onClick={handleExecuteSplit}
-              className="flex items-center gap-1 rounded bg-amber-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-amber-500 transition"
-            >
-              <Sparkles className="h-3 w-3" />
-              <span>Carve #{territory.number}</span>
-            </button>
-          ) : (
-            <button
-              onClick={handleResetSplit}
-              className="flex items-center gap-1 rounded bg-slate-800 px-2 py-1 text-[11px] text-slate-300 hover:bg-slate-700 transition"
-            >
-              <Check className="h-3 w-3 text-emerald-400" />
-              <span>Revert Split</span>
-            </button>
-          )}
+          <span className="text-xs text-slate-200">Carve {territory.number} into #A & #B sectors</span>
+          <button
+            onClick={handleExecuteSplit}
+            className="flex items-center gap-1 rounded bg-amber-600 px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-amber-500"
+          >
+            <Sparkles className="h-3 w-3" />
+            <span>Execute Split</span>
+          </button>
         </div>
       )}
 
-      {/* Bottom GIS Status Coordinate Bar */}
-      <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-slate-500 bg-slate-900/80 px-3 py-1.5 rounded border border-slate-800 backdrop-blur">
-        <div>
-          Tool: <span className="text-emerald-400 font-semibold uppercase">{activeTool}</span> | Projection: EPSG:4326 | Coordinates: 4.8210° N, 6.9882° E
-        </div>
-        <div className="flex gap-4">
-          <span>Area: {splitExecuted ? '7.4 ha + 7.4 ha' : '14.8 Hectares'}</span>
-          <span>Zoom: 16.4x</span>
-          <span className="text-emerald-400">Native Rust GIS Core: Active</span>
-        </div>
+      {/* Bottom Live Telemetry Strip */}
+      <div className="absolute bottom-4 left-4 flex items-center gap-4 rounded-lg border border-slate-800 bg-slate-900/90 px-3.5 py-2 text-[11px] text-slate-300 backdrop-blur">
+        <span className="flex items-center gap-1.5">
+          <MapPin className="h-3.5 w-3.5 text-cyan-400" />
+          <strong>{sharedPins.length}</strong> Shared Pins
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Radio className="h-3.5 w-3.5 text-emerald-400" />
+          <strong>{activeTrackers.length}</strong> Live Publishers Tracked
+        </span>
       </div>
     </div>
   );

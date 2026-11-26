@@ -13,8 +13,11 @@ CREATE TABLE congregations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   circuit TEXT,
-  country_code TEXT DEFAULT 'NG',
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  country_code TEXT DEFAULT 'WW',
+  kingdom_hall_address TEXT,
+  meeting_schedule TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 2. USER PROFILES (Linked to Supabase Auth)
@@ -23,7 +26,21 @@ CREATE TABLE profiles (
   congregation_id UUID REFERENCES congregations(id),
   display_name TEXT NOT NULL,
   role TEXT CHECK (role IN ('elder', 'servant', 'regular_pioneer', 'auxiliary_pioneer', 'publisher')) DEFAULT 'publisher',
+  service_group TEXT DEFAULT 'Group 1',
+  is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2B. CONGREGATION PUBLISHERS ROSTER (Full CRUD for Elders/Servants & local-first members)
+CREATE TABLE congregation_publishers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  congregation_id UUID NOT NULL REFERENCES congregations(id) ON DELETE CASCADE,
+  display_name TEXT NOT NULL,
+  role TEXT CHECK (role IN ('elder', 'servant', 'regular_pioneer', 'auxiliary_pioneer', 'publisher')) DEFAULT 'publisher',
+  service_group TEXT DEFAULT 'Group 1',
+  is_active BOOLEAN DEFAULT TRUE,
+  linked_user_id UUID REFERENCES profiles(id),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -79,7 +96,67 @@ CREATE TABLE service_logs (
 
 CREATE INDEX idx_service_logs_user ON service_logs(user_id);
 
--- 6. REGIONAL VECTOR TILE PACK MANIFEST (Served via Supabase Storage / Cloudflare R2)
+-- 6. SHARED PINS (Congregation Location Management & Pin Sharing)
+CREATE TABLE shared_pins (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  congregation_id UUID NOT NULL REFERENCES congregations(id) ON DELETE CASCADE,
+  territory_id UUID REFERENCES territories(id) ON DELETE SET NULL,
+  created_by TEXT NOT NULL,
+  title TEXT NOT NULL,
+  category TEXT CHECK (category IN ('meeting_point', 'parking', 'rv_hotspot', 'cart_site', 'hazard_gate', 'custom')) DEFAULT 'meeting_point',
+  latitude DOUBLE PRECISION NOT NULL,
+  longitude DOUBLE PRECISION NOT NULL,
+  notes TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. PUBLISHER CHAT & FIELD COORDINATION MESSAGES
+CREATE TABLE publisher_messages (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  congregation_id UUID NOT NULL REFERENCES congregations(id) ON DELETE CASCADE,
+  sender_id TEXT NOT NULL,
+  sender_name TEXT NOT NULL,
+  sender_role TEXT NOT NULL,
+  channel TEXT CHECK (channel IN ('general', 'field_service', 'territory_updates')) DEFAULT 'field_service',
+  body TEXT NOT NULL,
+  pin_id UUID REFERENCES shared_pins(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8. LIVE PUBLISHER TRACKING (Anonymized/Jittered Ministry Hours Presence)
+CREATE TABLE publisher_locations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  congregation_id UUID NOT NULL REFERENCES congregations(id) ON DELETE CASCADE,
+  publisher_id TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  territory_id UUID REFERENCES territories(id) ON DELETE SET NULL,
+  latitude DOUBLE PRECISION NOT NULL,
+  longitude DOUBLE PRECISION NOT NULL,
+  is_tracking BOOLEAN DEFAULT TRUE,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 9. CONGREGATION SERVICE REPORTS (Monthly S-4 Rollups for Secretary & Group Overseers)
+CREATE TABLE congregation_service_reports (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  congregation_id UUID NOT NULL REFERENCES congregations(id) ON DELETE CASCADE,
+  publisher_id TEXT NOT NULL,
+  publisher_name TEXT NOT NULL,
+  year_month TEXT NOT NULL,
+  publisher_role TEXT NOT NULL,
+  participated BOOLEAN DEFAULT TRUE,
+  hours NUMERIC(6,2) DEFAULT 0,
+  credit_hours NUMERIC(6,2) DEFAULT 0,
+  bible_studies INT DEFAULT 0,
+  remarks TEXT,
+  submitted_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 10. REGIONAL VECTOR TILE PACK MANIFEST (Served via Supabase Storage / Cloudflare R2)
 CREATE TABLE vector_tile_manifests (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   region_id TEXT UNIQUE NOT NULL, -- 'ph_city', 'lagos_metro', 'calabar_city'

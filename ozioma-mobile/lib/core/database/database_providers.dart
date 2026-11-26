@@ -7,6 +7,9 @@ import 'daos/address_dao.dart';
 import 'daos/return_visit_dao.dart';
 import 'daos/service_log_dao.dart';
 import 'daos/dnc_manager.dart';
+import 'daos/ministry_planner_dao.dart';
+import 'daos/congregation_dao.dart';
+import 'daos/collaboration_dao.dart';
 
 // Encryption providers
 final secureKeyManagerProvider = Provider<SecureKeyManager>((ref) {
@@ -41,10 +44,27 @@ final returnVisitDaoProvider = Provider<ReturnVisitDao>((ref) {
 
 final serviceLogDaoProvider = Provider<ServiceLogDao>((ref) {
   final manager = ref.watch(powerSyncDatabaseProvider);
-  return ServiceLogDao(manager.db);
+  final cipher = ref.watch(aesCipherProvider);
+  return ServiceLogDao(manager.db, cipher);
 });
 
 final dncManagerProvider = Provider<DncManager>((ref) {
   final manager = ref.watch(powerSyncDatabaseProvider);
   return DncManager(manager.db);
+});
+
+final ministryPlannerDaoProvider = Provider<MinistryPlannerDao>((ref) {
+  final manager = ref.watch(powerSyncDatabaseProvider);
+  final cipher = ref.watch(aesCipherProvider);
+  return MinistryPlannerDao(manager.db, cipher);
+});
+
+final congregationDaoProvider = Provider<CongregationDao>((ref) {
+  final manager = ref.watch(powerSyncDatabaseProvider);
+  return CongregationDao(manager.db);
+});
+
+final collaborationDaoProvider = Provider<CollaborationDao>((ref) {
+  final manager = ref.watch(powerSyncDatabaseProvider);
+  return CollaborationDao(manager.db);
 });

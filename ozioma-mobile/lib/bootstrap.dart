@@ -12,21 +12,21 @@ Future<void> bootstrap() async {
   final keyManager = SecureKeyManager();
   await keyManager.getOrCreateMasterKey();
 
-  // 2. Initialize Single Unified PowerSync SQLite Database
-  await PowerSyncManager.instance.initialize();
-
-  // 3. Initialize Supabase Client with graceful offline fallback
+  // 2. Initialize Supabase Client with graceful offline fallback
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: 'https://placeholder.supabase.co');
   const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: 'placeholder_anon_key');
 
   try {
     await Supabase.initialize(
       url: supabaseUrl,
-      publishableKey: supabaseAnonKey,
+      anonKey: supabaseAnonKey,
     );
   } catch (e) {
     debugPrint('Supabase offline initialization: $e');
   }
+
+  // 3. Initialize Single Unified PowerSync SQLite Database
+  await PowerSyncManager.instance.initialize();
 
   runApp(
     const ProviderScope(

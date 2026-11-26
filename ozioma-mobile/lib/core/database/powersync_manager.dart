@@ -28,8 +28,12 @@ class PowerSyncManager {
     _initialized = true;
 
     // Connect to Supabase backend if active session exists
-    final connector = OziomaSupabaseConnector();
-    db.connect(connector: connector);
+    try {
+      final connector = OziomaSupabaseConnector();
+      db.connect(connector: connector);
+    } catch (e) {
+      // Graceful offline fallback
+    }
   }
 
   Future<String> _getDefaultDbPath() async {
@@ -39,11 +43,19 @@ class PowerSyncManager {
 }
 
 class OziomaSupabaseConnector extends PowerSyncBackendConnector {
-  final supabase = Supabase.instance.client;
+  SupabaseClient? get _supabase {
+    try {
+      return Supabase.instance.client;
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   Future<PowerSyncCredentials?> fetchCredentials() async {
-    final session = supabase.auth.currentSession;
+    final client = _supabase;
+    if (client == null) return null;
+    final session = client.auth.currentSession;
     if (session == null) return null;
 
     // Use environment endpoint or fallback
@@ -55,6 +67,8 @@ class OziomaSupabaseConnector extends PowerSyncBackendConnector {
 
   @override
   Future<void> uploadData(PowerSyncDatabase database) async {
+    final client = _supabase;
+    if (client == null) return;
     final batch = await database.getCrudBatch();
     if (batch == null) return;
 
@@ -65,9 +79,9 @@ class OziomaSupabaseConnector extends PowerSyncBackendConnector {
           final data = Map<String, dynamic>.from(op.opData!);
           // Guarantee updated_at for LWW conflict resolution
           data['updated_at'] ??= DateTime.now().toUtc().toIso8601String();
-          await supabase.from(table).upsert(data, onConflict: 'id');
+          await client.from(table).upsert(data, onConflict: 'id');
         } else if (op.op == UpdateType.delete) {
-          await supabase.from(table).delete().eq('id', op.id);
+          await client.from(table).delete().eq('id', op.id);
         }
       } catch (e) {
         rethrow;

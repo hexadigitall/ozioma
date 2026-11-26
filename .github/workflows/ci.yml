@@ -40,7 +40,7 @@ jobs:
       - name: Run Unit Tests
         run: |
           cd ozioma-mobile
-          flutter test test/core/sync_conflict_test.dart test/features/presence_voice_test.dart
+          flutter test
 
   desktop-ci:
     name: Desktop Suite Validation (Tauri 2.0 & React 19)

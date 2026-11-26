@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#071952"/>
+      <stop offset="100%" stop-color="#040F34"/>
+    </linearGradient>
+    <linearGradient id="ozioma-grad" x1="120" y1="400" x2="380" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5B46F6"/>
+      <stop offset="50%" stop-color="#1D8FE1"/>
+      <stop offset="100%" stop-color="#19E6E6"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="464" height="464" rx="104" fill="url(#bg-grad)" stroke="#38BDF8" stroke-opacity="0.25" stroke-width="3"/>
+  <g stroke="url(#ozioma-grad)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 276 382 L 346 290 A 96 96 0 1 0 190 268 L 276 382 Z"/>
+    <path d="M 222 309 L 154 382 L 276 382"/>
+    <circle cx="272" cy="216" r="33"/>
+    <line x1="222" y1="271" x2="249" y2="242"/>
+    <line x1="295" y1="190" x2="336" y2="146"/>
+  </g>
+</svg>

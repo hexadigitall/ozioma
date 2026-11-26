@@ -7,16 +7,22 @@
 # ==============================================================================
 
 bucket_definitions:
-  # Bucket 1: Replicates congregation territory boundaries & address statuses
+  # Bucket 1: Replicates congregation structure, territory boundaries, pins, chat & tracking
   congregation_territories:
-    parameters: SELECT id as congregation_id FROM profiles WHERE id = auth.user_id()
+    parameters: SELECT congregation_id FROM profiles WHERE id = auth.user_id()
     data:
+      - SELECT * FROM congregations WHERE id = bucket.congregation_id
       - SELECT * FROM territories WHERE congregation_id = bucket.congregation_id
       - SELECT a.* FROM addresses a 
         JOIN territories t ON a.territory_id = t.id 
         WHERE t.congregation_id = bucket.congregation_id
-      - SELECT id, congregation_id, display_name, role FROM profiles 
+      - SELECT id, congregation_id, display_name, role, service_group, is_active FROM profiles 
         WHERE congregation_id = bucket.congregation_id
+      - SELECT * FROM congregation_publishers WHERE congregation_id = bucket.congregation_id
+      - SELECT * FROM shared_pins WHERE congregation_id = bucket.congregation_id
+      - SELECT * FROM publisher_messages WHERE congregation_id = bucket.congregation_id
+      - SELECT * FROM publisher_locations WHERE congregation_id = bucket.congregation_id
+      - SELECT * FROM congregation_service_reports WHERE congregation_id = bucket.congregation_id
 
   # Bucket 2: Replicates personal ministry hours (synced across user's devices)
   my_service_records:

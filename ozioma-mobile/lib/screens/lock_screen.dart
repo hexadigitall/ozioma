@@ -200,10 +200,24 @@ class _LockScreenState extends ConsumerState<LockScreen> with WidgetsBindingObse
                       ref.read(aesCipherProvider).clearMemory();
                       setState(() => _errorMessage = 'Stealth Lock Active');
                     },
-                    child: const CircleAvatar(
-                      radius: 36,
-                      backgroundColor: Colors.white10,
-                      child: Icon(Icons.shield_outlined, size: 40, color: Color(0xFF10B981)),
+                    child: Container(
+                      width: 78,
+                      height: 78,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white10,
+                        border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.45)),
+                      ),
+                      child: Image.asset(
+                        'assets/images/logo_mark.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.shield_outlined,
+                          size: 40,
+                          color: Color(0xFF10B981),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),

@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "1019662405707-l8s1d5m48h7b596hr4m6abke32apfv15.apps.googleusercontent.com",
+          "client_id": "1019662405707-92tkn895i9m2tk5gpda3it7fl6v6qvau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kovaro.ozioma",
+            "certificate_hash": "5b082b8cb38d7330ff9a368c6c1130c38743766a"
+          }
+        },
+        {
+          "client_id": "1019662405707-iqlm48t3agcgcpvu7nafq0klcd785gll.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1019662405707-l8s1d5m48h7b596hr4m6abke32apfv15.apps.googleusercontent.com",
+              "client_id": "1019662405707-iqlm48t3agcgcpvu7nafq0klcd785gll.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
